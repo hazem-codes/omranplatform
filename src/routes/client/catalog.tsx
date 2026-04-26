@@ -360,13 +360,18 @@ Requirements:
  </div>
  {detailItem.officeName && (
  <div className="rounded-xl border border-gold/30 bg-gradient-to-br from-gold/5 to-transparent p-4">
- <div className="flex items-center gap-3">
+ <Link
+   to="/client/office/$id"
+   params={{ id: detailItem.office_id }}
+   className="flex items-center gap-3 group/office hover:opacity-90"
+   aria-label={isRTL ? 'عرض صفحة المكتب' : 'View office page'}
+ >
  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-navy text-white font-bold">
  {(isRTL ? detailItem.officeName : detailItem.officeNameEn).charAt(0)}
  </div>
  <div className="flex-1 min-w-0">
  <p className="font-bold flex items-center gap-1.5">
- <span className="truncate">{isRTL ? detailItem.officeName : detailItem.officeNameEn}</span>
+ <span className="truncate text-gold underline-offset-2 group-hover/office:underline">{isRTL ? detailItem.officeName : detailItem.officeNameEn}</span>
  {detailItem.officeVerified && <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />}
  </p>
  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
@@ -375,7 +380,7 @@ Requirements:
  {detailItem.officeType && <span className="truncate">{detailItem.officeType}</span>}
  </div>
  </div>
- </div>
+ </Link>
  {detailItem.officePortfolio && detailItem.officePortfolio.length > 0 && (
  <div className="mt-3">
  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{isRTL ? 'من أعمال المكتب' : 'From their portfolio'}</div>

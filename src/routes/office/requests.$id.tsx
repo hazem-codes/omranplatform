@@ -8,6 +8,7 @@ import { bidService } from '@/services/bidService';
 import { messagingService } from '@/services/messagingService';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
+import { ConversationPanel } from '@/components/shared/ConversationPanel';
 import {
   ArrowLeft, ArrowRight, MapPin, DollarSign, Calendar, Ruler, Clock,
   User, Mail, Phone, FileText, Send, CheckCircle2, Loader2,

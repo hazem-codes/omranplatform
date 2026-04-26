@@ -112,10 +112,11 @@ function UploadTemplatePage() {
  await loadTemplates();
  } catch (err: any) {
  toast.error(err?.message || (isRTL ? 'تعذر حذف القالب' : 'Failed to delete template'));
- } finally {
- setDeletingId(null);
- }
- };
+    } finally {
+      setDeletingId(null);
+      setConfirmDeleteId(null);
+    }
+  };
 
  useEffect(() => {
  loadTemplates();

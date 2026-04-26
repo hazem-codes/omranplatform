@@ -37,10 +37,12 @@ function CatalogPage() {
  const [subCategory, setSubCategory] = useState('');
  const [pricingModel, setPricingModel] = useState('fixed');
  const [price, setPrice] = useState('');
- const [addingService, setAddingService] = useState(false);
- const [removingId, setRemovingId] = useState<string | null>(null);
- const [isOfficeVerified, setIsOfficeVerified] = useState<boolean | null>(null);
- const sar = isRTL ? 'ر.س' : 'SAR';
+  const [addingService, setAddingService] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [isOfficeVerified, setIsOfficeVerified] = useState<boolean | null>(null);
+  const [previewItem, setPreviewItem] = useState<any | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const sar = isRTL ? 'ر.س' : 'SAR';
 
  const subcategories = category
  ? SERVICE_CATEGORIES_DATA[category as ServiceCategory]?.subcategories || []

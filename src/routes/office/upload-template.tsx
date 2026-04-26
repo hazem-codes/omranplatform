@@ -161,9 +161,19 @@ function UploadTemplatePage() {
  {isRTL ? 'العودة' : 'Back'}
  </Button>
  </div>
- <h1 className="text-2xl font-black mb-2">{isRTL ? 'إضافة قالب هندسي جاهز' : 'Add Ready-made Engineering Template'}</h1>
- <p className="text-muted-foreground mb-6">{isRTL ? 'ارفع قالباً جاهزاً مع تفاصيل هندسية واضحة للمشتري' : 'Publish a ready-made template with clear engineering details'}</p>
- <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border bg-card p-8">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-black">{isRTL ? 'قوالب مكتبي' : 'My Templates'}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isRTL ? 'ارفع قوالب جاهزة وأدر منشوراتك في سوق القوالب' : 'Publish ready-made templates and manage your marketplace listings'}
+          </p>
+        </div>
+        <Button type="button" onClick={scrollToAddForm} className="bg-gradient-gold text-gold-foreground shadow-gold hover:opacity-90">
+          <Plus className="h-4 w-4 me-2" />
+          {isRTL ? 'إضافة قالب جديد' : 'Add New Template'}
+        </Button>
+      </div>
+      <form id="add-template-form" onSubmit={handleSubmit} className="space-y-4 rounded-2xl border bg-card p-8 scroll-mt-24">
  <div className="space-y-2">
  <Label>{isRTL ? 'اسم القالب' : 'Template Title'}</Label>
  <Input value={form.title} onChange={e => update('title', e.target.value)} required />

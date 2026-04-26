@@ -6,10 +6,6 @@ import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { supervisorService } from '@/services/supervisorService';
 import { bidService } from '@/services/bidService';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { StatusBadge } from '@/components/StatusBadge';
 import {
   ArrowLeft, ArrowRight, MapPin, DollarSign, Calendar, Ruler, Clock,
@@ -63,9 +59,6 @@ function OfficeRequestDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [existingBid, setExistingBid] = useState<any | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [bidOpen, setBidOpen] = useState(false);
-  const [bidForm, setBidForm] = useState({ price: '', timeline: '', notes: '' });
-  const [submittingBid, setSubmittingBid] = useState(false);
 
   useEffect(() => {
     if (!allowed || !user?.id) return;
@@ -123,24 +116,6 @@ function OfficeRequestDetailsPage() {
       setExistingBid({ status: 'submitted' });
     } catch (e: any) { toast.error(e.message); }
     finally { setProcessing(false); }
-  };
-
-  const submitBid = async () => {
-    if (!user?.id || !req || !bidForm.price || !bidForm.timeline) return;
-    try {
-      setSubmittingBid(true);
-      await bidService.submitBid({
-        request_id: req.request_id,
-        office_id: user.id,
-        price: parseFloat(bidForm.price),
-        timeline: parseInt(bidForm.timeline),
-      });
-      toast.success(isRTL ? 'تم تقديم العرض بنجاح' : 'Bid submitted successfully');
-      setExistingBid({ status: 'submitted' });
-      setBidOpen(false);
-      setBidForm({ price: '', timeline: '', notes: '' });
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSubmittingBid(false); }
   };
 
   // Budget parsing
@@ -266,7 +241,7 @@ function OfficeRequestDetailsPage() {
             ) : (
               <Button
                 className="bg-gradient-gold text-gold-foreground hover:opacity-90"
-                onClick={() => setBidOpen(true)}
+                onClick={() => navigate({ to: '/office/submit-offer/$id', params: { id: req.request_id } })}
               >
                 <Send className="h-4 w-4 me-2" />
                 {isRTL ? 'تقديم عرض' : 'Submit Bid'}
@@ -275,38 +250,6 @@ function OfficeRequestDetailsPage() {
           </div>
         </>
       )}
-
-      <Dialog open={bidOpen} onOpenChange={setBidOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>{isRTL ? 'تقديم عرض' : 'Submit Bid'}</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div className="p-3 rounded-lg bg-muted/30">
-              <p className="font-bold text-sm">{req?.title}</p>
-              <p className="text-xs text-muted-foreground">{req?._city} • {req?.budget_range}</p>
-            </div>
-            <div className="space-y-2">
-              <Label>{isRTL ? 'السعر' : 'Price'} ({sar})</Label>
-              <Input type="number" value={bidForm.price} onChange={e => setBidForm(f => ({ ...f, price: e.target.value }))} dir="ltr" />
-            </div>
-            <div className="space-y-2">
-              <Label>{isRTL ? 'المدة (أيام)' : 'Timeline (days)'}</Label>
-              <Input type="number" value={bidForm.timeline} onChange={e => setBidForm(f => ({ ...f, timeline: e.target.value }))} dir="ltr" />
-            </div>
-            <div className="space-y-2">
-              <Label>{isRTL ? 'ملاحظات' : 'Notes'}</Label>
-              <Textarea value={bidForm.notes} onChange={e => setBidForm(f => ({ ...f, notes: e.target.value }))} rows={3} />
-            </div>
-            <Button
-              className="w-full bg-gradient-gold text-gold-foreground shadow-gold hover:opacity-90"
-              onClick={submitBid}
-              disabled={submittingBid || !bidForm.price || !bidForm.timeline}
-            >
-              {submittingBid ? <Loader2 className="h-4 w-4 me-2 animate-spin" /> : <Send className="h-4 w-4 me-2" />}
-              {submittingBid ? (isRTL ? 'جارٍ الإرسال...' : 'Submitting...') : (isRTL ? 'تقديم العرض' : 'Submit Bid')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

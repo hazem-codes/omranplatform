@@ -46,6 +46,7 @@ import { Route as SupervisorOfficeIdRouteImport } from './routes/supervisor/offi
 import { Route as SupervisorChatIdRouteImport } from './routes/supervisor/chat.$id'
 import { Route as RequestsIdDetailsRouteImport } from './routes/requests/$id/details'
 import { Route as RegistrationsIdDetailsRouteImport } from './routes/registrations/$id/details'
+import { Route as OfficeSubmitOfferIdRouteImport } from './routes/office/submit-offer.$id'
 import { Route as OfficeRequestsIdRouteImport } from './routes/office/requests.$id'
 import { Route as OfficeChatIdRouteImport } from './routes/office/chat.$id'
 import { Route as DisputesIdDetailsRouteImport } from './routes/disputes/$id/details'
@@ -236,6 +237,11 @@ const RegistrationsIdDetailsRoute = RegistrationsIdDetailsRouteImport.update({
   path: '/registrations/$id/details',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OfficeSubmitOfferIdRoute = OfficeSubmitOfferIdRouteImport.update({
+  id: '/office/submit-offer/$id',
+  path: '/office/submit-offer/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OfficeRequestsIdRoute = OfficeRequestsIdRouteImport.update({
   id: '/office/requests/$id',
   path: '/office/requests/$id',
@@ -294,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/disputes/$id/details': typeof DisputesIdDetailsRoute
   '/office/chat/$id': typeof OfficeChatIdRoute
   '/office/requests/$id': typeof OfficeRequestsIdRoute
+  '/office/submit-offer/$id': typeof OfficeSubmitOfferIdRoute
   '/registrations/$id/details': typeof RegistrationsIdDetailsRoute
   '/requests/$id/details': typeof RequestsIdDetailsRoute
   '/supervisor/chat/$id': typeof SupervisorChatIdRoute
@@ -337,6 +344,7 @@ export interface FileRoutesByTo {
   '/disputes/$id/details': typeof DisputesIdDetailsRoute
   '/office/chat/$id': typeof OfficeChatIdRoute
   '/office/requests/$id': typeof OfficeRequestsIdRoute
+  '/office/submit-offer/$id': typeof OfficeSubmitOfferIdRoute
   '/registrations/$id/details': typeof RegistrationsIdDetailsRoute
   '/requests/$id/details': typeof RequestsIdDetailsRoute
   '/supervisor/chat/$id': typeof SupervisorChatIdRoute
@@ -381,6 +389,7 @@ export interface FileRoutesById {
   '/disputes/$id/details': typeof DisputesIdDetailsRoute
   '/office/chat/$id': typeof OfficeChatIdRoute
   '/office/requests/$id': typeof OfficeRequestsIdRoute
+  '/office/submit-offer/$id': typeof OfficeSubmitOfferIdRoute
   '/registrations/$id/details': typeof RegistrationsIdDetailsRoute
   '/requests/$id/details': typeof RequestsIdDetailsRoute
   '/supervisor/chat/$id': typeof SupervisorChatIdRoute
@@ -426,6 +435,7 @@ export interface FileRouteTypes {
     | '/disputes/$id/details'
     | '/office/chat/$id'
     | '/office/requests/$id'
+    | '/office/submit-offer/$id'
     | '/registrations/$id/details'
     | '/requests/$id/details'
     | '/supervisor/chat/$id'
@@ -469,6 +479,7 @@ export interface FileRouteTypes {
     | '/disputes/$id/details'
     | '/office/chat/$id'
     | '/office/requests/$id'
+    | '/office/submit-offer/$id'
     | '/registrations/$id/details'
     | '/requests/$id/details'
     | '/supervisor/chat/$id'
@@ -512,6 +523,7 @@ export interface FileRouteTypes {
     | '/disputes/$id/details'
     | '/office/chat/$id'
     | '/office/requests/$id'
+    | '/office/submit-offer/$id'
     | '/registrations/$id/details'
     | '/requests/$id/details'
     | '/supervisor/chat/$id'
@@ -556,6 +568,7 @@ export interface RootRouteChildren {
   DisputesIdDetailsRoute: typeof DisputesIdDetailsRoute
   OfficeChatIdRoute: typeof OfficeChatIdRoute
   OfficeRequestsIdRoute: typeof OfficeRequestsIdRoute
+  OfficeSubmitOfferIdRoute: typeof OfficeSubmitOfferIdRoute
   RegistrationsIdDetailsRoute: typeof RegistrationsIdDetailsRoute
   RequestsIdDetailsRoute: typeof RequestsIdDetailsRoute
   SupervisorChatIdRoute: typeof SupervisorChatIdRoute
@@ -824,6 +837,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegistrationsIdDetailsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/office/submit-offer/$id': {
+      id: '/office/submit-offer/$id'
+      path: '/office/submit-offer/$id'
+      fullPath: '/office/submit-offer/$id'
+      preLoaderRoute: typeof OfficeSubmitOfferIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/office/requests/$id': {
       id: '/office/requests/$id'
       path: '/office/requests/$id'
@@ -892,6 +912,7 @@ const rootRouteChildren: RootRouteChildren = {
   DisputesIdDetailsRoute: DisputesIdDetailsRoute,
   OfficeChatIdRoute: OfficeChatIdRoute,
   OfficeRequestsIdRoute: OfficeRequestsIdRoute,
+  OfficeSubmitOfferIdRoute: OfficeSubmitOfferIdRoute,
   RegistrationsIdDetailsRoute: RegistrationsIdDetailsRoute,
   RequestsIdDetailsRoute: RequestsIdDetailsRoute,
   SupervisorChatIdRoute: SupervisorChatIdRoute,

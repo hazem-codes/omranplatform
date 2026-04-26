@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MessageSquare } from 'lucide-react';
+import { Inbox, MessageSquare } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -147,63 +147,65 @@ export function RoleInbox({ role, userId, isRTL }: RoleInboxProps) {
               </p>
             </CardContent>
           </Card>
-        ) : conversations.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground text-sm py-8 text-center">
-                {isRTL ? 'لا توجد محادثات بعد' : 'No conversations yet'}
-              </p>
-            </CardContent>
-          </Card>
         ) : (
           sections.map((sec) => {
             const items = grouped.get(sec.key) ?? [];
-            if (items.length === 0) return null;
             return (
               <section key={sec.key}>
                 <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground mb-2 px-1">
                   {isRTL ? sec.ar : sec.en}{' '}
-                  <span className="text-xs font-medium opacity-60">
-                    ({items.length})
-                  </span>
+                  {items.length > 0 && (
+                    <span className="text-xs font-medium opacity-60">
+                      ({items.length})
+                    </span>
+                  )}
                 </h2>
                 <Card>
-                  <CardContent className="p-0 divide-y">
-                    {items.map((c) => {
-                      const partner = counterpartyName(c);
-                      const unreadN = unread.get(c.id) ?? 0;
-                      return (
-                        <button
-                          key={c.id}
-                          type="button"
-                          onClick={() => setActive(c)}
-                          className="flex w-full items-start justify-between gap-3 p-3 hover:bg-muted/40 text-start transition-colors"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold truncate">
-                                {c.reference_title ||
-                                  (isRTL ? 'محادثة' : 'Conversation')}
-                              </span>
-                              {unreadN > 0 && (
-                                <Badge className="bg-gold text-gold-foreground hover:bg-gold/90">
-                                  {unreadN}
-                                </Badge>
+                  {items.length === 0 ? (
+                    <CardContent className="py-8 flex flex-col items-center justify-center text-center text-muted-foreground">
+                      <Inbox className="h-6 w-6 mb-2 opacity-50" />
+                      <p className="text-sm">
+                        {isRTL ? 'لا توجد محادثات حتى الآن' : 'No conversations yet'}
+                      </p>
+                    </CardContent>
+                  ) : (
+                    <CardContent className="p-0 divide-y">
+                      {items.map((c) => {
+                        const partner = counterpartyName(c);
+                        const unreadN = unread.get(c.id) ?? 0;
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => setActive(c)}
+                            className="flex w-full items-start justify-between gap-3 p-3 hover:bg-muted/40 text-start transition-colors"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold truncate">
+                                  {c.reference_title ||
+                                    (isRTL ? 'محادثة' : 'Conversation')}
+                                </span>
+                                {unreadN > 0 && (
+                                  <Badge className="bg-gold text-gold-foreground hover:bg-gold/90">
+                                    {unreadN}
+                                  </Badge>
+                                )}
+                              </div>
+                              {partner && (
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                                  {isRTL ? 'مع:' : 'With:'} {partner}
+                                </p>
                               )}
                             </div>
-                            {partner && (
-                              <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                                {isRTL ? 'مع:' : 'With:'} {partner}
-                              </p>
-                            )}
-                          </div>
-                          <div className="text-[11px] text-muted-foreground shrink-0">
-                            {formatter.format(new Date(c.last_message_at))}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </CardContent>
+                            <div className="text-[11px] text-muted-foreground shrink-0">
+                              {formatter.format(new Date(c.last_message_at))}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </CardContent>
+                  )}
                 </Card>
               </section>
             );

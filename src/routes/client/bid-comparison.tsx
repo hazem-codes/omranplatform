@@ -54,6 +54,21 @@ function BidComparisonPage() {
       } else {
         setOfficeNames({});
       }
+
+      // Fetch the parent project request so we have title + client_id for chats.
+      try {
+        const { data: req } = await supabase
+          .from('project_requests')
+          .select('title, client_id')
+          .eq('request_id', request_id)
+          .maybeSingle();
+        if (req) {
+          setRequestInfo({
+            title: (req as any).title ?? null,
+            client_id: (req as any).client_id ?? null,
+          });
+        }
+      } catch { /* ignore */ }
     } catch { setBids([]); }
     finally { setLoading(false); }
   };
@@ -67,8 +82,24 @@ function BidComparisonPage() {
   const handleAccept = async (bidId: string) => {
     try {
       setProcessingId(bidId);
-      await bidService.acceptBid(bidId);
-      toast.success(isRTL ? 'تم قبول العرض' : 'Bid accepted');
+      const acceptedBid = await bidService.acceptBid(bidId);
+      // Open a project_request conversation with the winning office.
+      const officeId = (acceptedBid as any)?.office_id
+        ?? bids.find((b: any) => b.bid_id === bidId)?.office_id
+        ?? null;
+      const clientId = requestInfo.client_id ?? user?.id ?? null;
+      if (officeId && clientId) {
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'project_request',
+            referenceId: request_id,
+            referenceTitle: requestInfo.title ?? null,
+            clientId,
+            officeId,
+          });
+        } catch { /* non-blocking */ }
+      }
+      toast.success(isRTL ? 'تم قبول العرض وفتح محادثة مع المكتب' : 'Bid accepted and conversation opened with office');
       await loadBids();
     } catch (err: any) { toast.error(err.message); }
     finally { setProcessingId(null); }

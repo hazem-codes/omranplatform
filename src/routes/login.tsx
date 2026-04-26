@@ -5,11 +5,10 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
-import { ChevronDown, Copy } from 'lucide-react';
+import { User, Building2, ShieldCheck } from 'lucide-react';
 import { resolvePostAuthDestination } from '@/services/authRoutingService';
 import omranLogo from '@/assets/omran-logo.png';
 

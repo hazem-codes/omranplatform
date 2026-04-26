@@ -195,7 +195,23 @@ function BrowseRequestsPage() {
         price: parseFloat(req.budget_range?.replace(/[^\d.]/g, '') || '0'),
         timeline: 30,
       });
-      toast.success(isRTL ? 'تم قبول الطلب' : 'Request accepted');
+      // Open a conversation thread with the client for this service request.
+      if (req.client_id && user?.id) {
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'service_request',
+            referenceId: req.request_id,
+            referenceTitle: req.cleanTitle || req.rawTitle || null,
+            clientId: req.client_id,
+            officeId: user.id,
+          });
+        } catch { /* non-blocking */ }
+      }
+      toast.success(
+        isRTL
+          ? 'تم قبول الطلب وفتح محادثة مع العميل'
+          : 'Request accepted and conversation opened with client',
+      );
       setMyBids(prev => ({ ...prev, [req.request_id]: { status: 'submitted' } }));
     } catch (err: any) {
       toast.error(err.message);
@@ -218,12 +234,22 @@ function BrowseRequestsPage() {
     }
   };
 
-  const handleClarify = (req: EnrichedRequest) => {
-    if (!req.client_id) {
+  const handleClarify = async (req: EnrichedRequest) => {
+    if (!req.client_id || !user?.id) {
       toast.error(isRTL ? 'العميل غير متاح' : 'Client unavailable');
       return;
     }
-    navigate({ to: '/office/chat/$id', params: { id: req.client_id } });
+    try {
+      await messagingService.getOrCreateConversation({
+        type: 'service_request',
+        referenceId: req.request_id,
+        referenceTitle: req.cleanTitle || req.rawTitle || null,
+        clientId: req.client_id,
+        officeId: user.id,
+      });
+      toast.success(isRTL ? 'تم فتح محادثة مع العميل' : 'Conversation opened with client');
+    } catch { /* non-blocking */ }
+    navigate({ to: '/office/inbox' });
   };
 
   const formatDate = (iso?: string | null) => {

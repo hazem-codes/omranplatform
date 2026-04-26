@@ -47,9 +47,24 @@ function UploadTemplatePage() {
  });
  const [templateFile, setTemplateFile] = useState<File | null>(null);
  const [loading, setLoading] = useState(false);
- const [templates, setTemplates] = useState<any[]>([]);
- const [loadingTemplates, setLoadingTemplates] = useState(false);
- const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [previewTpl, setPreviewTpl] = useState<any | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const labelCat = (key: string) => {
+    const cat = SERVICE_CATEGORIES_DATA[key as ServiceCategory];
+    return cat ? (isRTL ? cat.ar : cat.en) : key;
+  };
+  const labelSub = (catKey: string, subKey: string) => {
+    const cat = SERVICE_CATEGORIES_DATA[catKey as ServiceCategory];
+    const sub = cat?.subcategories.find(s => s.key === subKey);
+    return sub ? (isRTL ? sub.ar : sub.en) : subKey;
+  };
+  const scrollToAddForm = () => {
+    document.getElementById('add-template-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
  const subcategories = form.category
  ? SERVICE_CATEGORIES_DATA[form.category as ServiceCategory]?.subcategories || []

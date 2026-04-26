@@ -224,7 +224,11 @@ function CatalogPage() {
             const subLabel = item.sub_category ? labelSub(item.category, item.sub_category) : '';
             const isActive = isOfficeVerified;
             return (
-              <div key={item.catalog_id} className="rounded-2xl border bg-card p-5 hover:shadow-md transition-shadow flex flex-col">
+              <div key={item.catalog_id} className="rounded-2xl border bg-card overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                <div className="relative h-32 w-full bg-muted">
+                  <img src={imageFor(item)} alt={catLabel} className="h-full w-full object-cover" loading="lazy" />
+                </div>
+                <div className="p-5 flex flex-col flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-lg font-bold leading-tight">
                     {catLabel}

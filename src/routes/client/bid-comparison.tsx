@@ -24,10 +24,12 @@ function BidComparisonPage() {
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const sar = isRTL ? 'ر.س' : 'SAR';
+  const { user } = useAuth();
   const { allowed, isLoading: guardLoading } = useAuthGuard('client');
   const { request_id } = Route.useSearch();
   const [bids, setBids] = useState<any[]>([]);
   const [officeNames, setOfficeNames] = useState<Record<string, string>>({});
+  const [requestInfo, setRequestInfo] = useState<{ title: string | null; client_id: string | null }>({ title: null, client_id: null });
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
 

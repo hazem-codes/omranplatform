@@ -2,11 +2,14 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { bidService } from '@/services/bidService';
+import { messagingService } from '@/services/messagingService';
+import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/StatusBadge';
+import { ConversationPanel } from '@/components/shared/ConversationPanel';
 import { CheckCircle2, XCircle, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
@@ -22,10 +25,12 @@ function BidComparisonPage() {
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const sar = isRTL ? 'ر.س' : 'SAR';
+  const { user } = useAuth();
   const { allowed, isLoading: guardLoading } = useAuthGuard('client');
   const { request_id } = Route.useSearch();
   const [bids, setBids] = useState<any[]>([]);
   const [officeNames, setOfficeNames] = useState<Record<string, string>>({});
+  const [requestInfo, setRequestInfo] = useState<{ title: string | null; client_id: string | null }>({ title: null, client_id: null });
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -50,6 +55,21 @@ function BidComparisonPage() {
       } else {
         setOfficeNames({});
       }
+
+      // Fetch the parent project request so we have title + client_id for chats.
+      try {
+        const { data: req } = await supabase
+          .from('project_requests')
+          .select('title, client_id')
+          .eq('request_id', request_id)
+          .maybeSingle();
+        if (req) {
+          setRequestInfo({
+            title: (req as any).title ?? null,
+            client_id: (req as any).client_id ?? null,
+          });
+        }
+      } catch { /* ignore */ }
     } catch { setBids([]); }
     finally { setLoading(false); }
   };
@@ -63,8 +83,24 @@ function BidComparisonPage() {
   const handleAccept = async (bidId: string) => {
     try {
       setProcessingId(bidId);
-      await bidService.acceptBid(bidId);
-      toast.success(isRTL ? 'تم قبول العرض' : 'Bid accepted');
+      const acceptedBid = await bidService.acceptBid(bidId);
+      // Open a project_request conversation with the winning office.
+      const officeId = (acceptedBid as any)?.office_id
+        ?? bids.find((b: any) => b.bid_id === bidId)?.office_id
+        ?? null;
+      const clientId = requestInfo.client_id ?? user?.id ?? null;
+      if (officeId && clientId) {
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'project_request',
+            referenceId: request_id,
+            referenceTitle: requestInfo.title ?? null,
+            clientId,
+            officeId,
+          });
+        } catch { /* non-blocking */ }
+      }
+      toast.success(isRTL ? 'تم قبول العرض وفتح محادثة مع المكتب' : 'Bid accepted and conversation opened with office');
       await loadBids();
     } catch (err: any) { toast.error(err.message); }
     finally { setProcessingId(null); }
@@ -170,6 +206,26 @@ function BidComparisonPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Chat with the winning office once a bid is accepted. */}
+      {(() => {
+        const accepted = bids.find((b: any) => b.status === 'accepted');
+        if (!accepted || !user?.id) return null;
+        return (
+          <div className="mt-6">
+            <ConversationPanel
+              type="project_request"
+              referenceId={request_id}
+              referenceTitle={requestInfo.title}
+              clientId={requestInfo.client_id ?? user.id}
+              officeId={accepted.office_id}
+              currentUserId={user.id}
+              isRTL={isRTL}
+              defaultOpen={false}
+            />
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { bidService } from '@/services/bidService';
 import { projectRequestService } from '@/services/projectRequestService';
 import { contractService } from '@/services/contractService';
 import { notificationService } from '@/services/notificationService';
+import { messagingService } from '@/services/messagingService';
 import { templateService } from '@/services/templateService';
 import { templatePurchaseService } from '@/services/templatePurchaseService';
 import { serviceCatalogService } from '@/services/serviceCatalogService';
@@ -48,22 +49,31 @@ function OfficeDashboard() {
 
  if (!allowed) return guardLoading ? <div className="flex min-h-[60vh] items-center justify-center"><span className="text-muted-foreground">جاري التحقق...</span></div> : null;
 
- const acceptBooking = async (req: any) => {
- try {
- await projectRequestService.updateStatus(req.request_id, 'approved');
- if (req.client_id && user?.id) {
- await contractService.create({
- client_id: req.client_id,
- office_id: user.id,
- title: req.title,
- description: req.description || '',
- });
- await notificationService.send(req.client_id, isRTL ? 'تم قبول طلب الحجز وإنشاء العقد' : 'Your booking was accepted and contract generated');
- }
- setDirectBookings(prev => prev.filter(r => r.request_id !== req.request_id));
- toast.success('');
- } catch (err: any) { toast.error(err.message); }
- };
+  const acceptBooking = async (req: any) => {
+    try {
+      await projectRequestService.updateStatus(req.request_id, 'approved');
+      if (req.client_id && user?.id) {
+        await contractService.create({
+          client_id: req.client_id,
+          office_id: user.id,
+          title: req.title,
+          description: req.description || '',
+        });
+        await notificationService.send(req.client_id, isRTL ? 'تم قبول طلب الحجز وإنشاء العقد' : 'Your booking was accepted and contract generated');
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'service_request',
+            referenceId: req.request_id,
+            referenceTitle: req.title || null,
+            clientId: req.client_id,
+            officeId: user.id,
+          });
+        } catch { /* non-blocking */ }
+      }
+      setDirectBookings(prev => prev.filter(r => r.request_id !== req.request_id));
+      toast.success(isRTL ? 'تم قبول الطلب وفتح محادثة مع العميل' : 'Request accepted and conversation opened with client');
+    } catch (err: any) { toast.error(err.message); }
+  };
 
  const rejectBooking = async (req: any) => {
  try {

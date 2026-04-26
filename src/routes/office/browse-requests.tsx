@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEffect, useMemo, useState } from 'react';
 import { projectRequestService } from '@/services/projectRequestService';
 import { bidService } from '@/services/bidService';
+import { messagingService } from '@/services/messagingService';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -194,7 +195,23 @@ function BrowseRequestsPage() {
         price: parseFloat(req.budget_range?.replace(/[^\d.]/g, '') || '0'),
         timeline: 30,
       });
-      toast.success(isRTL ? 'تم قبول الطلب' : 'Request accepted');
+      // Open a conversation thread with the client for this service request.
+      if (req.client_id && user?.id) {
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'service_request',
+            referenceId: req.request_id,
+            referenceTitle: req.cleanTitle || req.rawTitle || null,
+            clientId: req.client_id,
+            officeId: user.id,
+          });
+        } catch { /* non-blocking */ }
+      }
+      toast.success(
+        isRTL
+          ? 'تم قبول الطلب وفتح محادثة مع العميل'
+          : 'Request accepted and conversation opened with client',
+      );
       setMyBids(prev => ({ ...prev, [req.request_id]: { status: 'submitted' } }));
     } catch (err: any) {
       toast.error(err.message);
@@ -217,12 +234,22 @@ function BrowseRequestsPage() {
     }
   };
 
-  const handleClarify = (req: EnrichedRequest) => {
-    if (!req.client_id) {
+  const handleClarify = async (req: EnrichedRequest) => {
+    if (!req.client_id || !user?.id) {
       toast.error(isRTL ? 'العميل غير متاح' : 'Client unavailable');
       return;
     }
-    navigate({ to: '/office/chat/$id', params: { id: req.client_id } });
+    try {
+      await messagingService.getOrCreateConversation({
+        type: 'service_request',
+        referenceId: req.request_id,
+        referenceTitle: req.cleanTitle || req.rawTitle || null,
+        clientId: req.client_id,
+        officeId: user.id,
+      });
+      toast.success(isRTL ? 'تم فتح محادثة مع العميل' : 'Conversation opened with client');
+    } catch { /* non-blocking */ }
+    navigate({ to: '/office/inbox' });
   };
 
   const formatDate = (iso?: string | null) => {
@@ -358,14 +385,43 @@ function BrowseRequestsPage() {
                 </Button>
               </>
             ) : (
-              <Button
-                size="sm"
-                className="flex-1 md:flex-none bg-gradient-gold text-gold-foreground hover:opacity-90"
-                onClick={() => navigate({ to: '/office/submit-offer/$id', params: { id: req.request_id } })}
-              >
-                <Send className="h-3 w-3 me-1" />
-                {isRTL ? 'قدّم عرضك' : 'Submit Bid'}
-              </Button>
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 md:flex-none"
+                  onClick={async () => {
+                    if (!req.client_id || !user?.id) {
+                      toast.error(isRTL ? 'العميل غير متاح' : 'Client unavailable');
+                      return;
+                    }
+                    try {
+                      await messagingService.getOrCreateConversation({
+                        type: 'pre_bid_inquiry',
+                        referenceId: req.request_id,
+                        referenceTitle: req.cleanTitle || req.rawTitle || null,
+                        clientId: req.client_id,
+                        officeId: user.id,
+                      });
+                      toast.success(isRTL ? 'تم فتح محادثة استفسار' : 'Inquiry conversation opened');
+                      navigate({ to: '/office/inbox' });
+                    } catch (err: any) {
+                      toast.error(err?.message || (isRTL ? 'تعذر فتح المحادثة' : 'Could not open conversation'));
+                    }
+                  }}
+                >
+                  <MessageCircleQuestion className="h-3 w-3 me-1" />
+                  {isRTL ? 'استفسر عن المشروع' : 'Ask about project'}
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1 md:flex-none bg-gradient-gold text-gold-foreground hover:opacity-90"
+                  onClick={() => navigate({ to: '/office/submit-offer/$id', params: { id: req.request_id } })}
+                >
+                  <Send className="h-3 w-3 me-1" />
+                  {isRTL ? 'قدّم عرضك' : 'Submit Bid'}
+                </Button>
+              </>
             )}
           </div>
         </div>

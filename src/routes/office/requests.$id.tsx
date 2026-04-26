@@ -113,7 +113,18 @@ function OfficeRequestDetailsPage() {
         price: parseFloat((req.budget_range || '').replace(/[^\d.]/g, '') || '0'),
         timeline: 30,
       });
-      toast.success(isRTL ? 'تم قبول الطلب' : 'Request accepted');
+      if (req.client_id) {
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'service_request',
+            referenceId: req.request_id,
+            referenceTitle: req.title || null,
+            clientId: req.client_id,
+            officeId: user.id,
+          });
+        } catch { /* non-blocking */ }
+      }
+      toast.success(isRTL ? 'تم قبول الطلب وفتح محادثة مع العميل' : 'Request accepted and conversation opened with client');
       setExistingBid({ status: 'submitted' });
     } catch (e: any) { toast.error(e.message); }
     finally { setProcessing(false); }

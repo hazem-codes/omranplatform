@@ -23,6 +23,7 @@ function LoginPage() {
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
  const [loading, setLoading] = useState(false);
+ const [highlightFields, setHighlightFields] = useState(false);
  const [suspendedMsg, setSuspendedMsg] = useState<string | null>(null);
  const isRTL = i18n.language === 'ar';
 

@@ -74,15 +74,32 @@ function CatalogPage() {
  finally { setAddingService(false); }
  };
 
- const removeService = async (id: string) => {
- try {
- setRemovingId(id);
- await serviceCatalogService.deleteService(id);
- setItems(prev => prev.filter(i => i.catalog_id !== id));
- toast.success('');
- } catch (err: any) { toast.error(err.message); }
- finally { setRemovingId(null); }
- };
+  const removeService = async (id: string) => {
+    try {
+      setRemovingId(id);
+      await serviceCatalogService.deleteService(id);
+      setItems(prev => prev.filter(i => i.catalog_id !== id));
+      toast.success(isRTL ? 'تم حذف الخدمة' : 'Service deleted');
+    } catch (err: any) { toast.error(err.message); }
+    finally { setRemovingId(null); setConfirmDeleteId(null); }
+  };
+
+  const scrollToAddForm = () => {
+    document.getElementById('add-service-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const labelCat = (key: string) => {
+    const cat = SERVICE_CATEGORIES_DATA[key as ServiceCategory];
+    return cat ? (isRTL ? cat.ar : cat.en) : key;
+  };
+  const labelSub = (catKey: string, subKey: string) => {
+    const cat = SERVICE_CATEGORIES_DATA[catKey as ServiceCategory];
+    const sub = cat?.subcategories.find(s => s.key === subKey);
+    return sub ? (isRTL ? sub.ar : sub.en) : subKey;
+  };
+  const pricingLabel = (model: string) =>
+    model === 'per_m2' ? (isRTL ? 'بالمتر المربع' : 'Per m²') : (isRTL ? 'سعر ثابت' : 'Fixed Price');
+
 
  return (
  <div className="mx-auto max-w-4xl px-4 py-8">

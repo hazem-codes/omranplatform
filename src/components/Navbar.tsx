@@ -301,7 +301,16 @@ export function Navbar() {
  <Link to="/client/templates" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'القوالب الجاهزة' : 'Ready-made Templates'}</Button></Link>
  <Link to="/client/submit-request" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'انشر طلبك' : 'Post Request'}</Button></Link>
  <Link to="/estimator" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'حاسبة التكاليف' : 'Estimator'}</Button></Link>
- <Link to="/client/dashboard" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
+                <Link to="/client/dashboard" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
+                <Link to="/client/inbox" onClick={() => setMobileOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <MessageSquare className="h-4 w-4 me-2" />
+                    {isRTL ? 'الرسائل' : 'Messages'}
+                    {unreadMessages > 0 && (
+                      <span className="ms-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{unreadMessages}</span>
+                    )}
+                  </Button>
+                </Link>
  </>
  )}
  {role === 'engineering_office' && (

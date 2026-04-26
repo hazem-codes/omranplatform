@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { templateService } from '@/services/templateService';
 import { templatePurchaseService } from '@/services/templatePurchaseService';
+import { messagingService } from '@/services/messagingService';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

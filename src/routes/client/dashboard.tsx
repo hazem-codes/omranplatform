@@ -23,19 +23,12 @@ function ClientDashboard() {
 
  useEffect(() => {
  if (!user?.id || !allowed) return;
- projectRequestService.getByClient(user.id).then(async (reqs) => {
+ projectRequestService.getClientRequestsWithBidCount(user.id).then(async (reqs) => {
  setRequests(reqs ?? []);
- // Count real bids across approved requests
- let count = 0;
- for (const req of (reqs ?? [])) {
- if (req.status === 'approved') {
  try {
- const bids = await bidService.getBidsForRequest(req.request_id);
- count += (bids ?? []).filter((b: any) => b.status === 'submitted').length;
- } catch {}
- }
- }
- setTotalBids(count);
+ const allBids = await bidService.getBidsForClient(user.id);
+ setTotalBids((allBids ?? []).filter((b: any) => b.status === 'submitted').length);
+ } catch { setTotalBids(0); }
  }).catch(() => {});
  }, [user?.id, allowed]);
 
@@ -125,7 +118,12 @@ function ClientDashboard() {
  <div key={req.request_id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
  <div>
  <p className="font-medium">{req.title}</p>
- <p className="text-sm text-muted-foreground">{req.location} • {req.budget_range}</p>
+ <p className="text-sm text-muted-foreground">
+ {req.location} • {req.budget_range}
+ {typeof req.bids_count === 'number' && (
+ <> • {req.bids_count} {isRTL ? 'عرض' : 'bids'}</>
+ )}
+ </p>
  </div>
  <StatusBadge status={req.status || 'pending'} />
  </div>

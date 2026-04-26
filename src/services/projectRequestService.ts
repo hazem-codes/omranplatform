@@ -17,6 +17,24 @@ export const projectRequestService = {
     return data;
   },
 
+  // README: getClientRequestsWithBidCount(clientId)
+  // Returns each project request enriched with `bids_count` (number of bids per request).
+  async getClientRequestsWithBidCount(clientId: string) {
+    const { data: reqs, error } = await supabase.from('project_requests')
+      .select('*').eq('client_id', clientId).order('created_at', { ascending: false });
+    if (error) throw error;
+    const list = reqs ?? [];
+    if (list.length === 0) return list;
+    const ids = list.map((r: any) => r.request_id).filter(Boolean);
+    const { data: bids } = await supabase.from('bids')
+      .select('request_id').in('request_id', ids);
+    const counts: Record<string, number> = {};
+    (bids ?? []).forEach((b: any) => {
+      counts[b.request_id] = (counts[b.request_id] ?? 0) + 1;
+    });
+    return list.map((r: any) => ({ ...r, bids_count: counts[r.request_id] ?? 0 }));
+  },
+
   // README: getApprovedRequests()
   async getApprovedRequests() {
     const { data, error } = await supabase.from('project_requests')

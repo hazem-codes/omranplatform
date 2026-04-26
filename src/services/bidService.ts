@@ -51,4 +51,46 @@ export const bidService = {
     return data;
   },
   async withdraw(bidId: string) { return this.withdrawBid(bidId); },
+
+  // README: getBidsForClient(clientId)
+  // Returns all bids submitted on this client's project requests, enriched with
+  // office_name (profiles.name), city + office_type (engineering_offices), and
+  // request_title (project_requests.title). Manual joins because there are no
+  // FK constraints PostgREST can follow automatically.
+  async getBidsForClient(clientId: string) {
+    const { data: requests } = await supabase.from('project_requests')
+      .select('request_id, title').eq('client_id', clientId);
+    const reqList = requests ?? [];
+    if (reqList.length === 0) return [];
+    const requestIds = reqList.map((r: any) => r.request_id);
+    const reqMap = new Map<string, string>();
+    reqList.forEach((r: any) => reqMap.set(r.request_id, r.title));
+
+    const { data: bids, error } = await supabase.from('bids')
+      .select('*').in('request_id', requestIds).order('submitted_at', { ascending: false });
+    if (error) throw error;
+    const bidList = bids ?? [];
+    if (bidList.length === 0) return [];
+
+    const officeIds = Array.from(new Set(bidList.map((b: any) => b.office_id).filter(Boolean)));
+    const [profilesRes, officesRes] = await Promise.all([
+      supabase.from('profiles').select('id, name').in('id', officeIds),
+      supabase.from('engineering_offices').select('id, city, office_type').in('id', officeIds),
+    ]);
+    const nameMap = new Map<string, string>();
+    (profilesRes.data ?? []).forEach((p: any) => nameMap.set(p.id, p.name || ''));
+    const officeMap = new Map<string, any>();
+    (officesRes.data ?? []).forEach((o: any) => officeMap.set(o.id, o));
+
+    return bidList.map((b: any) => {
+      const office = officeMap.get(b.office_id) ?? {};
+      return {
+        ...b,
+        office_name: nameMap.get(b.office_id) || '',
+        city: office.city || null,
+        office_type: office.office_type || null,
+        request_title: reqMap.get(b.request_id) || '',
+      };
+    });
+  },
 };

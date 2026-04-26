@@ -99,7 +99,7 @@ function NearbyProjectsPage() {
   }, [enriched, category, radius, origin]);
 
   const handleView = (id: string) => {
-    navigate({ to: '/requests/$id/details', params: { id } });
+    navigate({ to: '/office/requests/$id', params: { id } });
   };
 
   const resolveManualAddress = async () => {

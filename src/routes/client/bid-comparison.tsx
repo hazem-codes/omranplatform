@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/StatusBadge';
+import { ConversationPanel } from '@/components/shared/ConversationPanel';
 import { CheckCircle2, XCircle, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthGuard } from '@/hooks/useAuthGuard';

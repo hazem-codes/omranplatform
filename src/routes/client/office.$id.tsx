@@ -229,6 +229,58 @@ function OfficeFullPage() {
             </div>
           )}
         </div>
+
+        {/* Templates list */}
+        {templates.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-xl font-bold mb-4">
+              {isRTL ? `القوالب الجاهزة (${templates.length})` : `Ready-made Templates (${templates.length})`}
+            </h2>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {templates.map((tpl: any) => {
+                const cat = SERVICE_CATEGORIES_DATA[tpl.category as ServiceCategory];
+                const sub = cat?.subcategories.find((s: any) => s.key === tpl.sub_category);
+                const cover = tpl.preview_image_url || SERVICE_COVERS[tpl.category] || SERVICE_COVERS.architectural_design;
+                return (
+                  <div key={tpl.template_id} className="group rounded-2xl border bg-card overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 flex flex-col">
+                    <div className="relative h-40 overflow-hidden border-b">
+                      <img src={cover} alt={tpl.title || ''} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
+                      <div className="absolute top-3 start-3 flex flex-wrap gap-1.5">
+                        {cat && (
+                          <span className="rounded-full bg-background/85 backdrop-blur px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm">
+                            {isRTL ? cat.ar : cat.en}
+                          </span>
+                        )}
+                        {sub && (
+                          <span className="rounded-full bg-gold/90 px-2.5 py-1 text-[11px] font-semibold text-gold-foreground shadow-sm">
+                            {isRTL ? sub.ar : sub.en}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-bold text-base mb-1 line-clamp-1">{tpl.title || (isRTL ? 'قالب جاهز' : 'Template')}</h3>
+                      {tpl.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{tpl.description}</p>
+                      )}
+                      <div className="mt-auto flex items-center justify-between gap-3">
+                        <span className="text-lg font-black text-gold">
+                          {tpl.price ? `${Number(tpl.price).toLocaleString()} ${sar}` : '—'}
+                        </span>
+                        <Link to="/client/templates" className="block">
+                          <Button size="sm" variant="outline" className="border-gold/30 text-gold hover:bg-gold/5">
+                            <FileText className="h-3.5 w-3.5 me-1" />{isRTL ? 'عرض في السوق' : 'View in Marketplace'}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

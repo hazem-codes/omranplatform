@@ -178,27 +178,164 @@ function CatalogPage() {
  </Button>
  </div>
 
- <div className="space-y-2">
- {items.map(item => {
- const cat = SERVICE_CATEGORIES_DATA[item.category as ServiceCategory];
- const sub = cat?.subcategories.find(s => s.key === item.sub_category);
- return (
- <div key={item.catalog_id} className="flex items-center justify-between rounded-xl border p-4">
- <div>
- <span className="font-medium">{isRTL ? cat?.ar : cat?.en || item.category}</span>
- {sub && <span className="text-sm text-muted-foreground ms-2">/ {isRTL ? sub.ar : sub.en}</span>}
- <div className="text-sm text-gold mt-1">
- {item.price ? `${Number(item.price).toLocaleString()} ${sar}` : '—'}
- {item.pricing_model === 'per_m2' ? ` / ${isRTL ? 'م²' : 'm²'}` : ''}
- </div>
- </div>
- <Button variant="ghost" size="icon" onClick={() => removeService(item.catalog_id)} disabled={removingId === item.catalog_id}>
- {removingId === item.catalog_id ? <Loader2 className="h-4 w-4 text-destructive animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
- </Button>
- </div>
- );
- })}
- </div>
- </div>
- );
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-lg font-bold">{isRTL ? 'خدماتي الحالية' : 'My Current Services'}</h2>
+        <span className="text-sm text-muted-foreground">{items.length} {isRTL ? 'خدمة' : 'services'}</span>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="rounded-2xl border border-dashed bg-card/50 p-10 text-center text-muted-foreground">
+          <Wrench className="h-8 w-8 mx-auto mb-2 opacity-50" />
+          <p className="text-sm">{isRTL ? 'لا توجد خدمات بعد. أضف أول خدمة لك أعلاه.' : 'No services yet. Add your first service above.'}</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {items.map(item => {
+            const catLabel = labelCat(item.category);
+            const subLabel = item.sub_category ? labelSub(item.category, item.sub_category) : '';
+            const isActive = isOfficeVerified;
+            return (
+              <div key={item.catalog_id} className="rounded-2xl border bg-card p-5 hover:shadow-md transition-shadow flex flex-col">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-lg font-bold leading-tight">
+                    {catLabel}
+                    {subLabel && <span className="block text-sm font-medium text-muted-foreground mt-0.5">{subLabel}</span>}
+                  </h3>
+                  <Badge variant={isActive ? 'default' : 'secondary'} className={isActive ? 'bg-success text-success-foreground' : ''}>
+                    {isActive ? (isRTL ? 'نشطة' : 'Active') : (isRTL ? 'بانتظار الاعتماد' : 'Pending')}
+                  </Badge>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Badge variant="outline" className="gap-1">
+                    <Tag className="h-3 w-3" />{catLabel}
+                  </Badge>
+                  {subLabel && (
+                    <Badge variant="outline">{subLabel}</Badge>
+                  )}
+                </div>
+
+                <p className="mt-3 text-sm text-muted-foreground line-clamp-2">
+                  {item.description || (isRTL ? 'لا يوجد وصف لهذه الخدمة بعد.' : 'No description provided yet.')}
+                </p>
+
+                <div className="mt-4 text-xl font-black text-gold">
+                  {item.price ? `${Number(item.price).toLocaleString()} ${sar}` : (isRTL ? 'السعر عند الطلب' : 'Price on request')}
+                  {item.pricing_model === 'per_m2' && (
+                    <span className="text-xs font-medium text-muted-foreground ms-1">/ {isRTL ? 'م²' : 'm²'}</span>
+                  )}
+                  <span className="block text-xs font-medium text-muted-foreground mt-0.5">{pricingLabel(item.pricing_model)}</span>
+                </div>
+
+                <div className="mt-4 flex gap-2 pt-4 border-t">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setPreviewItem(item)}>
+                    <Eye className="h-4 w-4 me-1" />
+                    {isRTL ? 'تفاصيل / معاينة' : 'Details / Preview'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => setConfirmDeleteId(item.catalog_id)}
+                    disabled={removingId === item.catalog_id}
+                  >
+                    {removingId === item.catalog_id ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Trash2 className="h-4 w-4 me-1" />}
+                    {isRTL ? 'حذف' : 'Delete'}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewItem} onOpenChange={(open) => { if (!open) setPreviewItem(null); }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
+          {previewItem && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl">
+                  {labelCat(previewItem.category)}
+                  {previewItem.sub_category && (
+                    <span className="block text-sm font-medium text-muted-foreground mt-1">
+                      {labelSub(previewItem.category, previewItem.sub_category)}
+                    </span>
+                  )}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-2">
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="gap-1"><Tag className="h-3 w-3" />{labelCat(previewItem.category)}</Badge>
+                  {previewItem.sub_category && <Badge variant="outline">{labelSub(previewItem.category, previewItem.sub_category)}</Badge>}
+                  <Badge variant={isOfficeVerified ? 'default' : 'secondary'} className={isOfficeVerified ? 'bg-success text-success-foreground' : ''}>
+                    {isOfficeVerified ? (isRTL ? 'نشطة' : 'Active') : (isRTL ? 'بانتظار الاعتماد' : 'Pending')}
+                  </Badge>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground">{isRTL ? 'السعر' : 'Price'}</p>
+                  <p className="text-2xl font-black text-gold">
+                    {previewItem.price ? `${Number(previewItem.price).toLocaleString()} ${sar}` : (isRTL ? 'السعر عند الطلب' : 'Price on request')}
+                    {previewItem.pricing_model === 'per_m2' && (
+                      <span className="text-sm font-medium text-muted-foreground ms-1">/ {isRTL ? 'م²' : 'm²'}</span>
+                    )}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{pricingLabel(previewItem.pricing_model)}</p>
+                </div>
+
+                {previewItem.description && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">{isRTL ? 'الوصف' : 'Description'}</p>
+                    <p className="text-sm whitespace-pre-wrap">{previewItem.description}</p>
+                  </div>
+                )}
+
+                {previewItem.coverage_area && (
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 text-gold mt-0.5" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">{isRTL ? 'منطقة التغطية' : 'Coverage Area'}</p>
+                      <p className="text-sm">{previewItem.coverage_area}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-xs text-muted-foreground pt-2 border-t">
+                  {isRTL ? 'أُضيفت في' : 'Added on'}{' '}
+                  {previewItem.created_at ? new Date(previewItem.created_at).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US') : '—'}
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setPreviewItem(null)}>
+                  {isRTL ? 'إغلاق' : 'Close'}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => { if (!open) setConfirmDeleteId(null); }}>
+        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{isRTL ? 'تأكيد الحذف' : 'Confirm Deletion'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {isRTL ? 'هل أنت متأكد من حذف هذه الخدمة؟ لا يمكن التراجع' : 'Are you sure you want to delete this service? This cannot be undone.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{isRTL ? 'إلغاء' : 'Cancel'}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { if (confirmDeleteId) removeService(confirmDeleteId); }}
+            >
+              {isRTL ? 'حذف' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
 }

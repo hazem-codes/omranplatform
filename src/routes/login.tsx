@@ -225,9 +225,16 @@ function DemoAccountsPanel({ isRTL, onFill }: { isRTL: boolean; onFill: (creds: 
              <span className="text-xs font-semibold text-foreground leading-tight">
                {isRTL ? acc.ar : acc.en}
              </span>
-             <span className="text-[10px] text-muted-foreground truncate w-full" dir="ltr">
-               {acc.email}
-             </span>
+             <div className="mt-1 w-full space-y-0.5 border-t border-dashed pt-1.5" dir="ltr">
+               <div className="flex items-center justify-between gap-1 text-[10px]">
+                 <span className="text-muted-foreground/70 shrink-0">Email</span>
+                 <span className="font-mono text-foreground/80 truncate">{acc.email}</span>
+               </div>
+               <div className="flex items-center justify-between gap-1 text-[10px]">
+                 <span className="text-muted-foreground/70 shrink-0">Pass</span>
+                 <span className="font-mono text-foreground/80 truncate">{acc.password}</span>
+               </div>
+             </div>
            </button>
          );
        })}

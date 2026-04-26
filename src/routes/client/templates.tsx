@@ -94,28 +94,40 @@ function TemplatesPage() {
  else if (priceRange === '1000to3000') filtered = filtered.filter(t => (t.price || 0) >= 1000 && (t.price || 0) <= 3000);
  else if (priceRange === 'above3000') filtered = filtered.filter(t => (t.price || 0) > 3000);
 
- const handlePurchase = async (item: any) => {
- if (!user?.id) {
- toast.error(isRTL ? 'يرجى تسجيل الدخول أولاً' : 'Please login first');
- return;
- }
- setProcessingTemplateId(item.template_id);
- try {
- await templatePurchaseService.create({
- template_id: item.template_id,
- client_id: user.id,
- office_id: item.office_id ?? null,
- purchase_price: Number(item.price ?? 0),
- title_snapshot: item.title ?? null,
- category_snapshot: item.category ?? null,
- sub_category_snapshot: item.sub_category ?? null,
- file_url_snapshot: item.file_url ?? null,
- preview_image_snapshot: item.preview_image_url ?? null,
- });
- toast.success(isRTL ? 'تم شراء القالب بنجاح ' : 'Template purchased successfully ');
- setPreviewItem(null);
- navigate({ to: '/client/my-requests', search: { tab: 'templates' } as any });
- } catch (err: any) {
+  const handlePurchase = async (item: any) => {
+    if (!user?.id) {
+      toast.error(isRTL ? 'يرجى تسجيل الدخول أولاً' : 'Please login first');
+      return;
+    }
+    setProcessingTemplateId(item.template_id);
+    try {
+      const purchase = await templatePurchaseService.create({
+        template_id: item.template_id,
+        client_id: user.id,
+        office_id: item.office_id ?? null,
+        purchase_price: Number(item.price ?? 0),
+        title_snapshot: item.title ?? null,
+        category_snapshot: item.category ?? null,
+        sub_category_snapshot: item.sub_category ?? null,
+        file_url_snapshot: item.file_url ?? null,
+        preview_image_snapshot: item.preview_image_url ?? null,
+      });
+      // Open a conversation thread between client and selling office.
+      if (item.office_id && purchase?.id) {
+        try {
+          await messagingService.getOrCreateConversation({
+            type: 'template_purchase',
+            referenceId: purchase.id,
+            referenceTitle: item.title ?? null,
+            clientId: user.id,
+            officeId: item.office_id,
+          });
+        } catch { /* non-blocking */ }
+      }
+      toast.success(isRTL ? 'تم شراء القالب بنجاح ' : 'Template purchased successfully ');
+      setPreviewItem(null);
+      navigate({ to: '/client/my-requests', search: { tab: 'templates' } as any });
+    } catch (err: any) {
  const msg = err?.message || '';
  if (msg.includes('template_purchases') || msg.includes('relation') || msg.toLowerCase().includes('does not exist')) {
  toast.error(isRTL

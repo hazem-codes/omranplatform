@@ -348,24 +348,29 @@ function TemplatesPage() {
  <div className="h-48 rounded-lg overflow-hidden relative">
  <img src={previewItem.coverImage} alt={previewItem.title} className="absolute inset-0 h-full w-full object-cover" />
  </div>
- {previewItem.officeName && (
- <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
- <div className="flex items-center gap-3">
- <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-navy text-white font-bold text-sm">
- {(isRTL ? previewItem.officeName : previewItem.officeNameEn).charAt(0)}
- </div>
- <div className="flex-1 min-w-0">
- <p className="text-[10px] text-muted-foreground">{isRTL ? 'يبيعه' : 'Sold by'}</p>
- <p className="font-bold text-sm flex items-center gap-1.5">
- <span className="truncate">{isRTL ? previewItem.officeName : previewItem.officeNameEn}</span>
- {previewItem.officeVerified && <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
- </p>
- <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
- {previewItem.officeCity && <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3" />{previewItem.officeCity}</span>}
- {previewItem.officeRating > 0 && <span className="flex items-center gap-0.5"><Star className="h-3 w-3 text-gold fill-gold" />{previewItem.officeRating.toFixed(1)}{previewItem.officeRatingCount > 0 ? ` (${previewItem.officeRatingCount})` : ''}</span>}
- </div>
- </div>
- </div>
+  {previewItem.officeName && (
+  <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4">
+  <Link
+    to="/client/office/$id"
+    params={{ id: previewItem.office_id }}
+    className="flex items-center gap-3 group/office hover:opacity-90"
+    aria-label={isRTL ? 'عرض صفحة المكتب' : 'View office page'}
+  >
+  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-navy text-white font-bold text-sm">
+  {(isRTL ? previewItem.officeName : previewItem.officeNameEn).charAt(0)}
+  </div>
+  <div className="flex-1 min-w-0">
+  <p className="text-[10px] text-muted-foreground">{isRTL ? 'يبيعه' : 'Sold by'}</p>
+  <p className="font-bold text-sm flex items-center gap-1.5">
+  <span className="truncate underline-offset-2 group-hover/office:underline">{isRTL ? previewItem.officeName : previewItem.officeNameEn}</span>
+  {previewItem.officeVerified && <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />}
+  </p>
+  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+  {previewItem.officeCity && <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3" />{previewItem.officeCity}</span>}
+  {previewItem.officeRating > 0 && <span className="flex items-center gap-0.5"><Star className="h-3 w-3 text-gold fill-gold" />{previewItem.officeRating.toFixed(1)}{previewItem.officeRatingCount > 0 ? ` (${previewItem.officeRatingCount})` : ''}</span>}
+  </div>
+  </div>
+  </Link>
  {previewItem.officePortfolio && previewItem.officePortfolio.length > 0 && (
  <div className="mt-3">
  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{isRTL ? 'من أعمال المكتب' : 'From their portfolio'}</div>

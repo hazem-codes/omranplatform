@@ -27,15 +27,30 @@ export function Navbar() {
  const { user, isAuthenticated, logout, role } = useAuth();
  const [mobileOpen, setMobileOpen] = useState(false);
  const [megaOpen, setMegaOpen] = useState(false);
- const [unreadCount, setUnreadCount] = useState(0);
- const megaRef = useRef<HTMLDivElement>(null);
- const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const megaRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
- useEffect(() => {
- if (user?.id) {
- notificationService.getUnreadCount(user.id).then(setUnreadCount).catch(() => {});
- }
- }, [user?.id]);
+  useEffect(() => {
+    if (user?.id) {
+      notificationService.getUnreadCount(user.id).then(setUnreadCount).catch(() => {});
+      messagingService
+        .getConversationsByUser(user.id)
+        .then(async (convs) => {
+          const ids = (convs ?? []).map((c: any) => c.id).filter(Boolean);
+          if (ids.length === 0) {
+            setUnreadMessages(0);
+            return;
+          }
+          const counts = await messagingService.getUnreadCountsForUser(user.id, ids);
+          let total = 0;
+          counts.forEach((n) => (total += n));
+          setUnreadMessages(total);
+        })
+        .catch(() => {});
+    }
+  }, [user?.id]);
 
  useEffect(() => {
  function handleClickOutside(e: MouseEvent) {

@@ -1,13 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { bidService } from '@/services/bidService';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/StatusBadge';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 
@@ -25,6 +25,7 @@ function BidComparisonPage() {
   const { allowed, isLoading: guardLoading } = useAuthGuard('client');
   const { request_id } = Route.useSearch();
   const [bids, setBids] = useState<any[]>([]);
+  const [officeNames, setOfficeNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -33,7 +34,22 @@ function BidComparisonPage() {
     try {
       setLoading(true);
       const data = await bidService.getBidsForRequest(request_id);
-      setBids(data ?? []);
+      const bidList = data ?? [];
+      setBids(bidList);
+
+      // Enrich with office names so the office column links to the public profile.
+      const officeIds = Array.from(new Set(bidList.map((b: any) => b.office_id).filter(Boolean)));
+      if (officeIds.length > 0) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, name')
+          .in('id', officeIds);
+        const map: Record<string, string> = {};
+        for (const p of (profs ?? [])) map[p.id] = p.name || '';
+        setOfficeNames(map);
+      } else {
+        setOfficeNames({});
+      }
     } catch { setBids([]); }
     finally { setLoading(false); }
   };
@@ -94,9 +110,31 @@ function BidComparisonPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {bids.map(b => (
+                {bids.map(b => {
+                  const officeName = officeNames[b.office_id] || (isRTL ? 'مكتب هندسي' : 'Engineering Office');
+                  return (
                   <TableRow key={b.bid_id}>
-                    <TableCell className="font-medium">{b.office_id?.slice(0, 8) || '-'}</TableCell>
+                    <TableCell className="font-medium">
+                      {b.office_id ? (
+                        <Link
+                          to="/client/office/$id"
+                          params={{ id: b.office_id }}
+                          className="inline-flex items-center gap-2 group/office hover:opacity-90"
+                          aria-label={isRTL ? 'عرض صفحة المكتب' : 'View office page'}
+                        >
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-navy text-white text-xs font-bold shrink-0">
+                            {officeName.charAt(0).toUpperCase() || '?'}
+                          </span>
+                          <span className="truncate text-gold underline-offset-2 group-hover/office:underline">
+                            {officeName}
+                          </span>
+                        </Link>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-muted-foreground">
+                          <Building2 className="h-3.5 w-3.5" />-
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell>{b.price?.toLocaleString()} {sar}</TableCell>
                     <TableCell>{b.timeline} {isRTL ? 'يوم' : 'days'}</TableCell>
                     <TableCell><StatusBadge status={b.status || 'submitted'} /></TableCell>
@@ -125,7 +163,8 @@ function BidComparisonPage() {
                       )}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}

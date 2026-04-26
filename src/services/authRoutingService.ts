@@ -24,7 +24,9 @@ export async function resolvePostAuthDestination(userId: string) {
     return '/register?onboarding=1';
   }
 
-  const role = profile.role as AppRole;
+  // Normalize legacy/short role value 'office' → canonical 'engineering_office'.
+  const rawRole = profile.role as string;
+  const role = (rawRole === 'office' ? 'engineering_office' : rawRole) as AppRole;
 
   if (role === 'client') {
     const { data: client } = await supabase

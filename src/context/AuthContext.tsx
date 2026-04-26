@@ -55,6 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single();
     if (data) {
       const profile = data as unknown as ProfileData;
+      // Normalize legacy/short role values from the DB so the rest of the app
+      // (route guards, redirects) sees the canonical role string.
+      if ((profile.role as string) === 'office') {
+        profile.role = 'engineering_office';
+      }
       const suspended = await enforceSuspension(userId, profile.role);
       if (suspended) {
         try { sessionStorage.setItem('omran:suspended', '1'); } catch {}

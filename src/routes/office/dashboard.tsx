@@ -6,6 +6,7 @@ import { bidService } from '@/services/bidService';
 import { projectRequestService } from '@/services/projectRequestService';
 import { contractService } from '@/services/contractService';
 import { notificationService } from '@/services/notificationService';
+import { messagingService } from '@/services/messagingService';
 import { templateService } from '@/services/templateService';
 import { templatePurchaseService } from '@/services/templatePurchaseService';
 import { serviceCatalogService } from '@/services/serviceCatalogService';

@@ -8,7 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, Loader2, Trash2, RefreshCcw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ArrowLeft, ArrowRight, Loader2, Trash2, RefreshCcw, Plus, Eye, FileImage, Tag, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { SERVICE_CATEGORIES, SERVICE_CATEGORIES_DATA, type ServiceCategory } from '@/types';
@@ -41,9 +47,24 @@ function UploadTemplatePage() {
  });
  const [templateFile, setTemplateFile] = useState<File | null>(null);
  const [loading, setLoading] = useState(false);
- const [templates, setTemplates] = useState<any[]>([]);
- const [loadingTemplates, setLoadingTemplates] = useState(false);
- const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [previewTpl, setPreviewTpl] = useState<any | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const labelCat = (key: string) => {
+    const cat = SERVICE_CATEGORIES_DATA[key as ServiceCategory];
+    return cat ? (isRTL ? cat.ar : cat.en) : key;
+  };
+  const labelSub = (catKey: string, subKey: string) => {
+    const cat = SERVICE_CATEGORIES_DATA[catKey as ServiceCategory];
+    const sub = cat?.subcategories.find(s => s.key === subKey);
+    return sub ? (isRTL ? sub.ar : sub.en) : subKey;
+  };
+  const scrollToAddForm = () => {
+    document.getElementById('add-template-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
  const subcategories = form.category
  ? SERVICE_CATEGORIES_DATA[form.category as ServiceCategory]?.subcategories || []
@@ -91,10 +112,11 @@ function UploadTemplatePage() {
  await loadTemplates();
  } catch (err: any) {
  toast.error(err?.message || (isRTL ? 'تعذر حذف القالب' : 'Failed to delete template'));
- } finally {
- setDeletingId(null);
- }
- };
+    } finally {
+      setDeletingId(null);
+      setConfirmDeleteId(null);
+    }
+  };
 
  useEffect(() => {
  loadTemplates();
@@ -132,16 +154,26 @@ function UploadTemplatePage() {
  };
 
  return (
- <div className="mx-auto max-w-2xl px-4 py-8">
+ <div className="mx-auto max-w-4xl px-4 py-8">
  <div className="mb-4">
  <Button variant="ghost" size="sm" onClick={() => navigate({ to: '/office/home' })}>
  <Arrow className="h-4 w-4 me-1" />
  {isRTL ? 'العودة' : 'Back'}
  </Button>
  </div>
- <h1 className="text-2xl font-black mb-2">{isRTL ? 'إضافة قالب هندسي جاهز' : 'Add Ready-made Engineering Template'}</h1>
- <p className="text-muted-foreground mb-6">{isRTL ? 'ارفع قالباً جاهزاً مع تفاصيل هندسية واضحة للمشتري' : 'Publish a ready-made template with clear engineering details'}</p>
- <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border bg-card p-8">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-black">{isRTL ? 'قوالب مكتبي' : 'My Templates'}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isRTL ? 'ارفع قوالب جاهزة وأدر منشوراتك في سوق القوالب' : 'Publish ready-made templates and manage your marketplace listings'}
+          </p>
+        </div>
+        <Button type="button" onClick={scrollToAddForm} className="bg-gradient-gold text-gold-foreground shadow-gold hover:opacity-90">
+          <Plus className="h-4 w-4 me-2" />
+          {isRTL ? 'إضافة قالب جديد' : 'Add New Template'}
+        </Button>
+      </div>
+      <form id="add-template-form" onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-4 rounded-2xl border bg-card p-8 scroll-mt-24">
  <div className="space-y-2">
  <Label>{isRTL ? 'اسم القالب' : 'Template Title'}</Label>
  <Input value={form.title} onChange={e => update('title', e.target.value)} required />
@@ -206,48 +238,171 @@ function UploadTemplatePage() {
  </Button>
  </form>
 
- <div className="mt-8 rounded-2xl border bg-card p-6">
- <div className="mb-4 flex items-center justify-between">
- <h2 className="text-lg font-bold">{isRTL ? 'قوالبي الحالية' : 'My Templates'}</h2>
- <Button type="button" variant="outline" size="sm" onClick={loadTemplates} disabled={loadingTemplates}>
- <RefreshCcw className={`h-4 w-4 me-1 ${loadingTemplates ? 'animate-spin' : ''}`} />
- {isRTL ? 'تحديث' : 'Refresh'}
- </Button>
- </div>
- {loadingTemplates ? (
- <div className="py-8 text-center text-muted-foreground">{isRTL ? 'جاري تحميل القوالب...' : 'Loading templates...'}</div>
- ) : templates.length === 0 ? (
- <div className="py-8 text-center text-muted-foreground">{isRTL ? 'لا توجد قوالب مضافة بعد' : 'No templates added yet'}</div>
- ) : (
- <div className="space-y-3">
- {templates.map((tpl) => (
- <div key={tpl.template_id} className="flex items-center justify-between rounded-xl border p-4">
- <div>
- <p className="font-semibold">{tpl.title || (isRTL ? 'قالب بدون اسم' : 'Untitled template')}</p>
- <p className="text-sm text-muted-foreground">{tpl.price ? `${Number(tpl.price).toLocaleString()} ${t('common.sar')}` : '-'}</p>
- <div className="mt-2 flex items-center gap-2">
- <StatusBadge status={getTemplateStatus(tpl)} />
- <span className="text-xs text-muted-foreground">
- {tpl.is_approved ? (isRTL ? 'معتمد للعرض' : 'Approved for marketplace') : (isRTL ? 'بانتظار/مرفوض من المشرف' : 'Pending/rejected by supervisor')}
- </span>
- </div>
- </div>
- <Button
- type="button"
- variant="outline"
- size="sm"
- className="text-destructive"
- onClick={() => deleteTemplate(tpl.template_id)}
- disabled={deletingId === tpl.template_id}
- >
- {deletingId === tpl.template_id ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Trash2 className="h-4 w-4 me-1" />}
- {isRTL ? 'حذف' : 'Delete'}
- </Button>
- </div>
- ))}
- </div>
- )}
- </div>
- </div>
- );
+      <div className="mt-8 rounded-2xl border bg-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-bold">
+            {isRTL ? 'قوالبي الحالية' : 'My Templates'}{' '}
+            <span className="text-sm font-medium text-muted-foreground">({templates.length})</span>
+          </h2>
+          <Button type="button" variant="outline" size="sm" onClick={loadTemplates} disabled={loadingTemplates}>
+            <RefreshCcw className={`h-4 w-4 me-1 ${loadingTemplates ? 'animate-spin' : ''}`} />
+            {isRTL ? 'تحديث' : 'Refresh'}
+          </Button>
+        </div>
+        {loadingTemplates ? (
+          <div className="py-8 text-center text-muted-foreground">{isRTL ? 'جاري تحميل القوالب...' : 'Loading templates...'}</div>
+        ) : templates.length === 0 ? (
+          <div className="rounded-xl border border-dashed bg-card/50 p-10 text-center text-muted-foreground">
+            <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">{isRTL ? 'لا توجد قوالب مضافة بعد. أضف أول قالب لك أعلاه.' : 'No templates added yet. Add your first template above.'}</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {templates.map((tpl) => {
+              const previewImg = tpl.preview_image_url
+                || (typeof tpl.description === 'string' ? (tpl.description.match(/Preview Image URL:\s*(\S+)/i)?.[1] || tpl.description.match(/رابط صورة المعاينة:\s*(\S+)/)?.[1]) : null)
+                || null;
+              const catLabel = tpl.category ? labelCat(tpl.category) : '';
+              const subLabel = tpl.category && tpl.sub_category ? labelSub(tpl.category, tpl.sub_category) : '';
+              return (
+                <div key={tpl.template_id} className="rounded-2xl border bg-card overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                  <div className="aspect-video bg-muted relative overflow-hidden">
+                    {previewImg ? (
+                      <img src={previewImg} alt={tpl.title || ''} className="h-full w-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+                        <FileImage className="h-10 w-10 opacity-40" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-bold leading-tight line-clamp-2">
+                        {tpl.title || (isRTL ? 'قالب بدون اسم' : 'Untitled template')}
+                      </h3>
+                      <StatusBadge status={getTemplateStatus(tpl)} />
+                    </div>
+                    {(catLabel || subLabel) && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {catLabel && <Badge variant="outline" className="gap-1"><Tag className="h-3 w-3" />{catLabel}</Badge>}
+                        {subLabel && <Badge variant="outline">{subLabel}</Badge>}
+                      </div>
+                    )}
+                    <div className="mt-3 text-lg font-black text-gold">
+                      {tpl.price ? `${Number(tpl.price).toLocaleString()} ${t('common.sar')}` : '-'}
+                    </div>
+                    <div className="mt-4 flex gap-2 pt-3 border-t">
+                      <Button type="button" variant="outline" size="sm" className="flex-1" onClick={() => setPreviewTpl(tpl)}>
+                        <Eye className="h-4 w-4 me-1" />
+                        {isRTL ? 'تفاصيل / معاينة' : 'Details / Preview'}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive hover:bg-destructive/10"
+                        onClick={() => setConfirmDeleteId(tpl.template_id)}
+                        disabled={deletingId === tpl.template_id}
+                      >
+                        {deletingId === tpl.template_id ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Trash2 className="h-4 w-4 me-1" />}
+                        {isRTL ? 'حذف' : 'Delete'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewTpl} onOpenChange={(open) => { if (!open) setPreviewTpl(null); }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
+          {previewTpl && (() => {
+            const previewImg = previewTpl.preview_image_url
+              || (typeof previewTpl.description === 'string' ? (previewTpl.description.match(/Preview Image URL:\s*(\S+)/i)?.[1] || previewTpl.description.match(/رابط صورة المعاينة:\s*(\S+)/)?.[1]) : null)
+              || null;
+            const catLabel = previewTpl.category ? labelCat(previewTpl.category) : '';
+            const subLabel = previewTpl.category && previewTpl.sub_category ? labelSub(previewTpl.category, previewTpl.sub_category) : '';
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-xl">
+                    {previewTpl.title || (isRTL ? 'قالب بدون اسم' : 'Untitled template')}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-2">
+                  {previewImg && (
+                    <div className="rounded-lg overflow-hidden border bg-muted">
+                      <img src={previewImg} alt={previewTpl.title || ''} className="w-full max-h-72 object-cover" />
+                    </div>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {catLabel && <Badge variant="outline" className="gap-1"><Tag className="h-3 w-3" />{catLabel}</Badge>}
+                    {subLabel && <Badge variant="outline">{subLabel}</Badge>}
+                    <StatusBadge status={getTemplateStatus(previewTpl)} />
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-muted-foreground">{isRTL ? 'السعر' : 'Price'}</p>
+                    <p className="text-2xl font-black text-gold">
+                      {previewTpl.price ? `${Number(previewTpl.price).toLocaleString()} ${t('common.sar')}` : '-'}
+                    </p>
+                  </div>
+
+                  {previewTpl.description && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">{isRTL ? 'التفاصيل' : 'Details'}</p>
+                      <p className="text-sm whitespace-pre-wrap">{previewTpl.description}</p>
+                    </div>
+                  )}
+
+                  {previewTpl.file_url && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">{isRTL ? 'ملف القالب' : 'Template File'}</p>
+                      <a href={previewTpl.file_url} target="_blank" rel="noreferrer" className="text-sm text-primary underline break-all">
+                        {previewTpl.file_url}
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="text-xs text-muted-foreground pt-2 border-t">
+                    {isRTL ? 'أُضيف في' : 'Added on'}{' '}
+                    {previewTpl.created_at ? new Date(previewTpl.created_at).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US') : '—'}
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setPreviewTpl(null)}>
+                    {isRTL ? 'إغلاق' : 'Close'}
+                  </Button>
+                </DialogFooter>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => { if (!open) setConfirmDeleteId(null); }}>
+        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{isRTL ? 'تأكيد الحذف' : 'Confirm Deletion'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {isRTL ? 'هل أنت متأكد من حذف هذا القالب؟ لا يمكن التراجع' : 'Are you sure you want to delete this template? This cannot be undone.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{isRTL ? 'إلغاء' : 'Cancel'}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { if (confirmDeleteId) deleteTemplate(confirmDeleteId); }}
+            >
+              {isRTL ? 'حذف' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
 }

@@ -385,14 +385,43 @@ function BrowseRequestsPage() {
                 </Button>
               </>
             ) : (
-              <Button
-                size="sm"
-                className="flex-1 md:flex-none bg-gradient-gold text-gold-foreground hover:opacity-90"
-                onClick={() => navigate({ to: '/office/submit-offer/$id', params: { id: req.request_id } })}
-              >
-                <Send className="h-3 w-3 me-1" />
-                {isRTL ? 'قدّم عرضك' : 'Submit Bid'}
-              </Button>
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 md:flex-none"
+                  onClick={async () => {
+                    if (!req.client_id || !user?.id) {
+                      toast.error(isRTL ? 'العميل غير متاح' : 'Client unavailable');
+                      return;
+                    }
+                    try {
+                      await messagingService.getOrCreateConversation({
+                        type: 'pre_bid_inquiry',
+                        referenceId: req.request_id,
+                        referenceTitle: req.cleanTitle || req.rawTitle || null,
+                        clientId: req.client_id,
+                        officeId: user.id,
+                      });
+                      toast.success(isRTL ? 'تم فتح محادثة استفسار' : 'Inquiry conversation opened');
+                      navigate({ to: '/office/inbox' });
+                    } catch (err: any) {
+                      toast.error(err?.message || (isRTL ? 'تعذر فتح المحادثة' : 'Could not open conversation'));
+                    }
+                  }}
+                >
+                  <MessageCircleQuestion className="h-3 w-3 me-1" />
+                  {isRTL ? 'استفسر عن المشروع' : 'Ask about project'}
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1 md:flex-none bg-gradient-gold text-gold-foreground hover:opacity-90"
+                  onClick={() => navigate({ to: '/office/submit-offer/$id', params: { id: req.request_id } })}
+                >
+                  <Send className="h-3 w-3 me-1" />
+                  {isRTL ? 'قدّم عرضك' : 'Submit Bid'}
+                </Button>
+              </>
             )}
           </div>
         </div>

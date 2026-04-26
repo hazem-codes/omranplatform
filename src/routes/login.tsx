@@ -112,11 +112,27 @@ function LoginPage() {
  <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border bg-card p-8 shadow-lg">
  <div className="space-y-2">
  <Label htmlFor="email">{t('auth.email')}</Label>
- <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required dir="ltr" />
+ <Input
+   id="email"
+   type="email"
+   value={email}
+   onChange={e => setEmail(e.target.value)}
+   required
+   dir="ltr"
+   className={highlightFields ? 'ring-2 ring-gold/60 transition-all duration-500' : 'transition-all duration-500'}
+ />
  </div>
  <div className="space-y-2">
  <Label htmlFor="password">{t('auth.password')}</Label>
- <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required dir="ltr" />
+ <Input
+   id="password"
+   type="password"
+   value={password}
+   onChange={e => setPassword(e.target.value)}
+   required
+   dir="ltr"
+   className={highlightFields ? 'ring-2 ring-gold/60 transition-all duration-500' : 'transition-all duration-500'}
+ />
  </div>
  <Button type="submit" className="w-full bg-gradient-gold text-gold-foreground shadow-gold hover:opacity-90" disabled={loading}>
  {loading ? t('common.loading') : t('auth.login')}
@@ -133,7 +149,15 @@ function LoginPage() {
  </form>
  )}
 
- <DemoAccountsPanel />
+ <DemoAccountsPanel
+   isRTL={isRTL}
+   onFill={(creds) => {
+     setEmail(creds.email);
+     setPassword(creds.password);
+     setHighlightFields(true);
+     window.setTimeout(() => setHighlightFields(false), 900);
+   }}
+ />
 
  <p className="text-center text-sm text-muted-foreground">
  {t('auth.no_account')}{' '}

@@ -109,7 +109,18 @@ function CatalogPage() {
  {isRTL ? 'العودة' : 'Back'}
  </Button>
  </div>
- <h1 className="text-2xl font-black mb-6">{isRTL ? 'إدارة كتالوج الخدمات' : 'Manage Service Catalog'}</h1>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-black">{isRTL ? 'خدمات مكتبي' : 'My Services'}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isRTL ? 'أدر خدماتك الظاهرة للعملاء في السوق' : 'Manage the services visible to clients in the marketplace'}
+          </p>
+        </div>
+        <Button onClick={scrollToAddForm} className="bg-gradient-gold text-gold-foreground shadow-gold hover:opacity-90">
+          <Plus className="h-4 w-4 me-2" />
+          {isRTL ? 'إضافة خدمة جديدة' : 'Add New Service'}
+        </Button>
+      </div>
 
  <div className={`mb-6 rounded-xl border p-4 text-sm ${isOfficeVerified ? 'border-success/30 bg-success/5 text-success' : 'border-warning/30 bg-warning/5 text-warning'}`}>
  {isOfficeVerified

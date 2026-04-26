@@ -44,6 +44,7 @@ function OfficeFullPage() {
   const [office, setOffice] = useState<any | null>(null);
   const [officeName, setOfficeName] = useState<string>('');
   const [services, setServices] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [rating, setRating] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
   const [loading, setLoading] = useState(true);
@@ -53,10 +54,11 @@ function OfficeFullPage() {
     let cancelled = false;
     (async () => {
       try {
-        const [officeProfile, profileRes, svcs, portfolioRes, ratings] = await Promise.all([
+        const [officeProfile, profileRes, svcs, tpls, portfolioRes, ratings] = await Promise.all([
           engineeringOfficeService.getOfficeProfile(id).catch(() => null),
           supabase.from('profiles').select('name').eq('id', id).maybeSingle(),
           serviceCatalogService.getByOffice(id).catch(() => []),
+          templateService.getByOffice(id).catch(() => []),
           supabase.from('portfolio').select('*').eq('office_id', id),
           fetchOfficeRatings([id]),
         ]);
@@ -64,6 +66,7 @@ function OfficeFullPage() {
         setOffice(officeProfile);
         setOfficeName(profileRes.data?.name || '');
         setServices(svcs ?? []);
+        setTemplates(Array.isArray(tpls) ? tpls.filter((t: any) => t?.is_approved !== false) : []);
         setPortfolio(portfolioRes.data ?? []);
         setRating(ratings.get(id) ?? { avg: 0, count: 0 });
       } finally {

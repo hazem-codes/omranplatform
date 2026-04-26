@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEffect, useMemo, useState } from 'react';
 import { projectRequestService } from '@/services/projectRequestService';
 import { bidService } from '@/services/bidService';
+import { messagingService } from '@/services/messagingService';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

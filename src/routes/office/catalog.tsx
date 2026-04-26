@@ -132,7 +132,7 @@ function CatalogPage() {
  : 'Catalog services become visible to clients only after office verification by a supervisor (no separate per-service approval exists in current schema).')}
  </div>
 
- <div className="rounded-2xl border bg-card p-6 mb-6 space-y-4">
+ <div id="add-service-form" className="rounded-2xl border bg-card p-6 mb-6 space-y-4 scroll-mt-24">
  <h3 className="font-bold">{isRTL ? 'إضافة خدمة جديدة' : 'Add New Service'}</h3>
  <div className="grid gap-4 md:grid-cols-2">
  <div className="space-y-2">

@@ -99,9 +99,7 @@ function NearbyProjectsPage() {
   }, [enriched, category, radius, origin]);
 
   const handleView = (id: string) => {
-    navigate({ to: '/office/browse-requests' });
-    // Project detail lives inside browse-requests as a dialog; user can open from there.
-    void id;
+    navigate({ to: '/requests/$id/details', params: { id } });
   };
 
   const resolveManualAddress = async () => {

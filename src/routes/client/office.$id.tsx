@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { serviceCatalogService, fetchOfficeRatings } from '@/services/serviceCatalogService';
 import { engineeringOfficeService } from '@/services/engineeringOfficeService';
+import { templateService } from '@/services/templateService';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ShieldCheck, MapPin, Star, Building2, ShoppingCart, Eye, Package } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShieldCheck, MapPin, Star, Building2, ShoppingCart, Package, Briefcase, FileText } from 'lucide-react';
 import { SERVICE_CATEGORIES_DATA, type ServiceCategory } from '@/types';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 

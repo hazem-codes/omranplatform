@@ -276,6 +276,7 @@ function CatalogPage() {
                     {isRTL ? 'حذف' : 'Delete'}
                   </Button>
                 </div>
+                </div>
               </div>
             );
           })}

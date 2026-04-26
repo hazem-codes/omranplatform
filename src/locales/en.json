@@ -190,6 +190,8 @@
     "released": "Released",
     "frozen": "Frozen",
     "open": "Open",
-    "resolved": "Resolved"
+    "resolved": "Resolved",
+    "direct_booking": "Direct Booking",
+    "needs_clarification": "Needs Clarification"
   }
 }

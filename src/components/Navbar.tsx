@@ -228,9 +228,20 @@ export function Navbar() {
  {megaOpen && (role === 'client' ? renderClientMega() : renderPublicMega())}
  </div>
  <Link to="/estimator"><Button variant="ghost" size="sm"><Calculator className="h-4 w-4 me-1" />{isRTL ? 'حاسبة التكاليف' : 'Estimator'}</Button></Link>
- {role === 'client' && (
- <Link to="/client/dashboard"><Button variant="ghost" size="sm">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
- )}
+          {role === 'client' && (
+            <>
+              <Link to="/client/dashboard"><Button variant="ghost" size="sm">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
+              <Link to="/client/inbox" className="relative">
+                <Button variant="ghost" size="sm" className="gap-1">
+                  <MessageSquare className="h-4 w-4" />
+                  {isRTL ? 'الرسائل' : 'Messages'}
+                  {unreadMessages > 0 && (
+                    <span className="ms-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{unreadMessages}</span>
+                  )}
+                </Button>
+              </Link>
+            </>
+          )}
  </>
  )}
 

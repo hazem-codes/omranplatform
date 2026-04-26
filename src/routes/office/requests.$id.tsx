@@ -261,6 +261,19 @@ function OfficeRequestDetailsPage() {
               </Button>
             )}
           </div>
+
+          {req.client_id && user?.id && (
+            <ConversationPanel
+              type={isDirect ? 'service_request' : 'pre_bid_inquiry'}
+              referenceId={req.request_id}
+              referenceTitle={req.title || null}
+              clientId={req.client_id}
+              officeId={user.id}
+              currentUserId={user.id}
+              isRTL={isRTL}
+              defaultOpen={false}
+            />
+          )}
         </>
       )}
     </div>

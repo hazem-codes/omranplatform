@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { serviceCatalogService, fetchOfficeRatings } from '@/services/serviceCatalogService';
 import { engineeringOfficeService } from '@/services/engineeringOfficeService';
+import { templateService } from '@/services/templateService';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ShieldCheck, MapPin, Star, Building2, ShoppingCart, Eye, Package } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShieldCheck, MapPin, Star, Building2, ShoppingCart, Package, Briefcase, FileText } from 'lucide-react';
 import { SERVICE_CATEGORIES_DATA, type ServiceCategory } from '@/types';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 
@@ -43,6 +44,7 @@ function OfficeFullPage() {
   const [office, setOffice] = useState<any | null>(null);
   const [officeName, setOfficeName] = useState<string>('');
   const [services, setServices] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [rating, setRating] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
   const [loading, setLoading] = useState(true);
@@ -52,10 +54,11 @@ function OfficeFullPage() {
     let cancelled = false;
     (async () => {
       try {
-        const [officeProfile, profileRes, svcs, portfolioRes, ratings] = await Promise.all([
+        const [officeProfile, profileRes, svcs, tpls, portfolioRes, ratings] = await Promise.all([
           engineeringOfficeService.getOfficeProfile(id).catch(() => null),
           supabase.from('profiles').select('name').eq('id', id).maybeSingle(),
           serviceCatalogService.getByOffice(id).catch(() => []),
+          templateService.getByOffice(id).catch(() => []),
           supabase.from('portfolio').select('*').eq('office_id', id),
           fetchOfficeRatings([id]),
         ]);
@@ -63,6 +66,7 @@ function OfficeFullPage() {
         setOffice(officeProfile);
         setOfficeName(profileRes.data?.name || '');
         setServices(svcs ?? []);
+        setTemplates(Array.isArray(tpls) ? tpls.filter((t: any) => t?.is_approved !== false) : []);
         setPortfolio(portfolioRes.data ?? []);
         setRating(ratings.get(id) ?? { avg: 0, count: 0 });
       } finally {
@@ -93,7 +97,7 @@ function OfficeFullPage() {
       <div className="mx-auto max-w-7xl px-4 -mt-16 relative">
         {/* Office identity card */}
         <div className="rounded-2xl border bg-card p-6 shadow-xl mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-navy text-white font-black text-3xl shadow-lg">
               {(officeName || '?').charAt(0).toUpperCase()}
             </div>
@@ -106,6 +110,11 @@ function OfficeFullPage() {
                   </span>
                 )}
               </div>
+              {office?.office_type && (
+                <p className="mt-1 text-sm font-medium text-gold inline-flex items-center gap-1.5">
+                  <Briefcase className="h-3.5 w-3.5" />{office.office_type}
+                </p>
+              )}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
                 {city && <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{city}</span>}
                 {rating.count > 0 && (
@@ -118,6 +127,13 @@ function OfficeFullPage() {
               {office?.description && (
                 <p className="text-sm text-foreground/80 mt-3 leading-relaxed">{office.description}</p>
               )}
+            </div>
+            <div className="flex sm:flex-col gap-2 sm:items-end shrink-0">
+              <Link to="/client/catalog" className="block">
+                <Button size="lg" className="bg-gradient-gold text-gold-foreground hover:opacity-90 shadow-gold">
+                  <ShoppingCart className="h-4 w-4 me-1.5" />{isRTL ? 'اطلب خدمة' : 'Request Service'}
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -213,6 +229,58 @@ function OfficeFullPage() {
             </div>
           )}
         </div>
+
+        {/* Templates list */}
+        {templates.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-xl font-bold mb-4">
+              {isRTL ? `القوالب الجاهزة (${templates.length})` : `Ready-made Templates (${templates.length})`}
+            </h2>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {templates.map((tpl: any) => {
+                const cat = SERVICE_CATEGORIES_DATA[tpl.category as ServiceCategory];
+                const sub = cat?.subcategories.find((s: any) => s.key === tpl.sub_category);
+                const cover = tpl.preview_image_url || SERVICE_COVERS[tpl.category] || SERVICE_COVERS.architectural_design;
+                return (
+                  <div key={tpl.template_id} className="group rounded-2xl border bg-card overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 flex flex-col">
+                    <div className="relative h-40 overflow-hidden border-b">
+                      <img src={cover} alt={tpl.title || ''} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
+                      <div className="absolute top-3 start-3 flex flex-wrap gap-1.5">
+                        {cat && (
+                          <span className="rounded-full bg-background/85 backdrop-blur px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm">
+                            {isRTL ? cat.ar : cat.en}
+                          </span>
+                        )}
+                        {sub && (
+                          <span className="rounded-full bg-gold/90 px-2.5 py-1 text-[11px] font-semibold text-gold-foreground shadow-sm">
+                            {isRTL ? sub.ar : sub.en}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-bold text-base mb-1 line-clamp-1">{tpl.title || (isRTL ? 'قالب جاهز' : 'Template')}</h3>
+                      {tpl.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{tpl.description}</p>
+                      )}
+                      <div className="mt-auto flex items-center justify-between gap-3">
+                        <span className="text-lg font-black text-gold">
+                          {tpl.price ? `${Number(tpl.price).toLocaleString()} ${sar}` : '—'}
+                        </span>
+                        <Link to="/client/templates" className="block">
+                          <Button size="sm" variant="outline" className="border-gold/30 text-gold hover:bg-gold/5">
+                            <FileText className="h-3.5 w-3.5 me-1" />{isRTL ? 'عرض في السوق' : 'View in Marketplace'}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -173,7 +173,7 @@ function UploadTemplatePage() {
           {isRTL ? 'إضافة قالب جديد' : 'Add New Template'}
         </Button>
       </div>
-      <form id="add-template-form" onSubmit={handleSubmit} className="space-y-4 rounded-2xl border bg-card p-8 scroll-mt-24">
+      <form id="add-template-form" onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-4 rounded-2xl border bg-card p-8 scroll-mt-24">
  <div className="space-y-2">
  <Label>{isRTL ? 'اسم القالب' : 'Template Title'}</Label>
  <Input value={form.title} onChange={e => update('title', e.target.value)} required />

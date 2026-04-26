@@ -95,7 +95,7 @@ export const messagingService = {
       // any other error -> bubble up
       throw findErr;
     }
-    if (existing) return existing as Conversation;
+    if (existing) return existing as unknown as Conversation;
 
     // 2) Otherwise create it.
     const { data: created, error: insErr } = await conv()
@@ -110,13 +110,13 @@ export const messagingService = {
       .select('*')
       .single();
     if (insErr) throw insErr;
-    return created as Conversation;
+    return created as unknown as Conversation;
   },
 
   async getConversation(id: string): Promise<Conversation | null> {
     const { data, error } = await conv().select('*').eq('id', id).maybeSingle();
     if (error) throw error;
-    return (data as Conversation) ?? null;
+    return (data as unknown as Conversation) ?? null;
   },
 
   /**
@@ -150,7 +150,7 @@ export const messagingService = {
       .select('*')
       .single();
     if (error) throw error;
-    return data as ChatMessage;
+    return data as unknown as ChatMessage;
   },
 
   async getMessages(conversationId: string): Promise<ChatMessage[]> {
@@ -159,7 +159,7 @@ export const messagingService = {
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true });
     if (error) throw error;
-    return (data ?? []) as ChatMessage[];
+    return (data ?? []) as unknown as ChatMessage[];
   },
 
   /**
@@ -186,7 +186,7 @@ export const messagingService = {
       .or(`client_id.eq.${userId},office_id.eq.${userId},supervisor_id.eq.${userId}`)
       .order('last_message_at', { ascending: false });
     if (error) throw error;
-    return (data ?? []) as Conversation[];
+    return (data ?? []) as unknown as Conversation[];
   },
 
   /**

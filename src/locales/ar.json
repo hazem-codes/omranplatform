@@ -1,0 +1,195 @@
+{
+  "app": {
+    "name": "عمران",
+    "tagline": "منصة الخدمات الهندسية الاحترافية"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "services": "الخدمات",
+    "templates": "القوالب",
+    "about": "عن المنصة",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "dashboard": "لوحة التحكم",
+    "profile": "الملف الشخصي",
+    "notifications": "الإشعارات"
+  },
+  "landing": {
+    "hero_title": "عمران للخدمات الهندسية",
+    "hero_subtitle": "نربط أصحاب المشاريع بالمكاتب الهندسية المعتمدة في المملكة العربية السعودية",
+    "cta_client": "أنا صاحب مشروع",
+    "cta_office": "أنا مكتب هندسي",
+    "how_it_works": "كيف تعمل المنصة؟",
+    "step1_title": "أنشئ طلب مشروع",
+    "step1_desc": "صف مشروعك واحصل على عروض من مكاتب هندسية معتمدة",
+    "step2_title": "قارن العروض",
+    "step2_desc": "استخدم الذكاء الاصطناعي لمقارنة العروض واختيار الأفضل",
+    "step3_title": "تابع مشروعك",
+    "step3_desc": "تابع تقدم المشروع والمراحل عبر لوحة تحكم متكاملة",
+    "categories": "فئات الخدمات",
+    "testimonials": "آراء العملاء",
+    "trusted_by": "موثوق من قبل"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "role": "نوع الحساب",
+    "client": "صاحب مشروع",
+    "engineering_office": "مكتب هندسي",
+    "supervisor": "مشرف",
+    "license_number": "رقم الرخصة",
+    "coverage_area": "نطاق التغطية",
+    "license_expiry": "تاريخ انتهاء الرخصة",
+    "description": "الوصف",
+    "no_account": "ليس لديك حساب؟",
+    "has_account": "لديك حساب بالفعل؟",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "register_office": "تسجيل مكتب هندسي"
+  },
+  "dashboard": {
+    "welcome": "مرحباً",
+    "overview": "نظرة عامة",
+    "active_projects": "المشاريع النشطة",
+    "pending_bids": "العروض المعلقة",
+    "total_revenue": "إجمالي الإيرادات",
+    "recent_notifications": "الإشعارات الأخيرة"
+  },
+  "projects": {
+    "title": "المشاريع",
+    "submit_request": "تقديم طلب مشروع",
+    "my_requests": "طلباتي",
+    "project_title": "عنوان المشروع",
+    "description": "وصف المشروع",
+    "location": "الموقع",
+    "budget_range": "نطاق الميزانية",
+    "status": "الحالة",
+    "generate_description": "توليد الوصف بالذكاء الاصطناعي",
+    "browse_requests": "تصفح طلبات المشاريع"
+  },
+  "bids": {
+    "title": "العروض",
+    "submit_bid": "تقديم عرض",
+    "compare": "مقارنة العروض",
+    "price": "السعر",
+    "timeline": "المدة الزمنية",
+    "days": "يوم",
+    "ai_recommendation": "توصية الذكاء الاصطناعي",
+    "accept": "قبول",
+    "reject": "رفض",
+    "withdraw": "سحب العرض"
+  },
+  "contracts": {
+    "title": "العقود",
+    "sign": "توقيع العقد",
+    "view": "عرض العقد",
+    "signed": "تم التوقيع",
+    "pending": "بانتظار التوقيع"
+  },
+  "milestones": {
+    "title": "المراحل",
+    "create_plan": "إنشاء خطة المراحل",
+    "submit_deliverable": "تسليم المخرجات",
+    "approve": "اعتماد",
+    "reject": "رفض",
+    "pending": "معلق",
+    "completed": "مكتمل",
+    "in_progress": "قيد التنفيذ"
+  },
+  "escrow": {
+    "title": "الضمان المالي",
+    "deposit": "إيداع",
+    "release": "تحرير",
+    "balance": "الرصيد",
+    "frozen": "مجمد"
+  },
+  "templates": {
+    "title": "القوالب الجاهزة",
+    "upload": "رفع قالب",
+    "purchase": "شراء",
+    "approved": "معتمد",
+    "pending_approval": "بانتظار الاعتماد"
+  },
+  "catalog": {
+    "title": "كتالوج الخدمات",
+    "add_service": "إضافة خدمة",
+    "categories": {
+      "architectural": "التصميم المعماري",
+      "structural": "التصميم الإنشائي",
+      "electrical": "التصميم الكهربائي",
+      "mechanical": "التصميم الميكانيكي",
+      "surveying": "المساحة والرفع",
+      "supervision": "الإشراف الهندسي",
+      "environmental": "الدراسات البيئية",
+      "interior": "التصميم الداخلي"
+    }
+  },
+  "supervisor": {
+    "review_registrations": "مراجعة التسجيلات",
+    "review_requests": "مراجعة الطلبات",
+    "review_templates": "مراجعة القوالب",
+    "manage_disputes": "إدارة النزاعات",
+    "manage_accounts": "إدارة الحسابات",
+    "approve": "اعتماد",
+    "reject": "رفض",
+    "warn": "تحذير",
+    "suspend": "إيقاف"
+  },
+  "reports": {
+    "title": "البلاغات",
+    "submit": "تقديم بلاغ",
+    "open": "مفتوح",
+    "resolved": "تم الحل",
+    "under_review": "قيد المراجعة"
+  },
+  "ratings": {
+    "title": "التقييمات",
+    "submit_rating": "تقييم",
+    "stars": "نجوم",
+    "comment": "تعليق"
+  },
+  "chatbot": {
+    "title": "مساعد عمران الذكي",
+    "placeholder": "اكتب رسالتك...",
+    "greeting": "مرحباً! أنا مساعد عمران الذكي. كيف يمكنني مساعدتك؟"
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "search": "بحث",
+    "filter": "تصفية",
+    "loading": "جاري التحميل...",
+    "no_data": "لا توجد بيانات",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "submit": "إرسال",
+    "sar": "ر.س",
+    "days": "أيام",
+    "dark_mode": "الوضع الداكن",
+    "light_mode": "الوضع الفاتح",
+    "language": "اللغة"
+  },
+  "status": {
+    "pending": "معلق",
+    "approved": "معتمد",
+    "rejected": "مرفوض",
+    "active": "نشط",
+    "completed": "مكتمل",
+    "cancelled": "ملغي",
+    "submitted": "مُقدّم",
+    "held": "محتجز",
+    "released": "محرر",
+    "frozen": "مجمد",
+    "open": "مفتوح",
+    "resolved": "تم الحل"
+  }
+}

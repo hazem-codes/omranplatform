@@ -1,0 +1,195 @@
+{
+  "app": {
+    "name": "Omran",
+    "tagline": "Professional Engineering Services Platform"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "templates": "Templates",
+    "about": "About",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "notifications": "Notifications"
+  },
+  "landing": {
+    "hero_title": "Omran Engineering Services",
+    "hero_subtitle": "Connecting project owners with verified engineering offices across Saudi Arabia",
+    "cta_client": "I'm a Project Owner",
+    "cta_office": "I'm an Engineering Office",
+    "how_it_works": "How It Works",
+    "step1_title": "Submit a Project Request",
+    "step1_desc": "Describe your project and receive bids from verified engineering offices",
+    "step2_title": "Compare Bids",
+    "step2_desc": "Use AI to compare bids and choose the best one",
+    "step3_title": "Track Your Project",
+    "step3_desc": "Monitor progress and milestones through an integrated dashboard",
+    "categories": "Service Categories",
+    "testimonials": "Testimonials",
+    "trusted_by": "Trusted By"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "role": "Account Type",
+    "client": "Project Owner",
+    "engineering_office": "Engineering Office",
+    "supervisor": "Supervisor",
+    "license_number": "License Number",
+    "coverage_area": "Coverage Area",
+    "license_expiry": "License Expiry Date",
+    "description": "Description",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?",
+    "forgot_password": "Forgot Password?",
+    "register_office": "Register Engineering Office"
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "overview": "Overview",
+    "active_projects": "Active Projects",
+    "pending_bids": "Pending Bids",
+    "total_revenue": "Total Revenue",
+    "recent_notifications": "Recent Notifications"
+  },
+  "projects": {
+    "title": "Projects",
+    "submit_request": "Submit Project Request",
+    "my_requests": "My Requests",
+    "project_title": "Project Title",
+    "description": "Project Description",
+    "location": "Location",
+    "budget_range": "Budget Range",
+    "status": "Status",
+    "generate_description": "Generate with AI",
+    "browse_requests": "Browse Project Requests"
+  },
+  "bids": {
+    "title": "Bids",
+    "submit_bid": "Submit Bid",
+    "compare": "Compare Bids",
+    "price": "Price",
+    "timeline": "Timeline",
+    "days": "days",
+    "ai_recommendation": "AI Recommendation",
+    "accept": "Accept",
+    "reject": "Reject",
+    "withdraw": "Withdraw"
+  },
+  "contracts": {
+    "title": "Contracts",
+    "sign": "Sign Contract",
+    "view": "View Contract",
+    "signed": "Signed",
+    "pending": "Pending Signature"
+  },
+  "milestones": {
+    "title": "Milestones",
+    "create_plan": "Create Milestone Plan",
+    "submit_deliverable": "Submit Deliverable",
+    "approve": "Approve",
+    "reject": "Reject",
+    "pending": "Pending",
+    "completed": "Completed",
+    "in_progress": "In Progress"
+  },
+  "escrow": {
+    "title": "Escrow",
+    "deposit": "Deposit",
+    "release": "Release",
+    "balance": "Balance",
+    "frozen": "Frozen"
+  },
+  "templates": {
+    "title": "Ready Templates",
+    "upload": "Upload Template",
+    "purchase": "Purchase",
+    "approved": "Approved",
+    "pending_approval": "Pending Approval"
+  },
+  "catalog": {
+    "title": "Service Catalog",
+    "add_service": "Add Service",
+    "categories": {
+      "architectural": "Architectural Design",
+      "structural": "Structural Design",
+      "electrical": "Electrical Design",
+      "mechanical": "Mechanical Design",
+      "surveying": "Surveying",
+      "supervision": "Engineering Supervision",
+      "environmental": "Environmental Studies",
+      "interior": "Interior Design"
+    }
+  },
+  "supervisor": {
+    "review_registrations": "Review Registrations",
+    "review_requests": "Review Requests",
+    "review_templates": "Review Templates",
+    "manage_disputes": "Manage Disputes",
+    "manage_accounts": "Manage Accounts",
+    "approve": "Approve",
+    "reject": "Reject",
+    "warn": "Warn",
+    "suspend": "Suspend"
+  },
+  "reports": {
+    "title": "Reports",
+    "submit": "Submit Report",
+    "open": "Open",
+    "resolved": "Resolved",
+    "under_review": "Under Review"
+  },
+  "ratings": {
+    "title": "Ratings",
+    "submit_rating": "Rate",
+    "stars": "Stars",
+    "comment": "Comment"
+  },
+  "chatbot": {
+    "title": "Omran AI Assistant",
+    "placeholder": "Type your message...",
+    "greeting": "Hello! I'm Omran AI Assistant. How can I help you?"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "no_data": "No data available",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "sar": "SAR",
+    "days": "days",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "language": "Language"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "submitted": "Submitted",
+    "held": "Held",
+    "released": "Released",
+    "frozen": "Frozen",
+    "open": "Open",
+    "resolved": "Resolved"
+  }
+}

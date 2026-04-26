@@ -97,7 +97,7 @@ function OfficeFullPage() {
       <div className="mx-auto max-w-7xl px-4 -mt-16 relative">
         {/* Office identity card */}
         <div className="rounded-2xl border bg-card p-6 shadow-xl mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-navy text-white font-black text-3xl shadow-lg">
               {(officeName || '?').charAt(0).toUpperCase()}
             </div>
@@ -110,6 +110,11 @@ function OfficeFullPage() {
                   </span>
                 )}
               </div>
+              {office?.office_type && (
+                <p className="mt-1 text-sm font-medium text-gold inline-flex items-center gap-1.5">
+                  <Briefcase className="h-3.5 w-3.5" />{office.office_type}
+                </p>
+              )}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
                 {city && <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{city}</span>}
                 {rating.count > 0 && (
@@ -122,6 +127,13 @@ function OfficeFullPage() {
               {office?.description && (
                 <p className="text-sm text-foreground/80 mt-3 leading-relaxed">{office.description}</p>
               )}
+            </div>
+            <div className="flex sm:flex-col gap-2 sm:items-end shrink-0">
+              <Link to="/client/catalog" className="block">
+                <Button size="lg" className="bg-gradient-gold text-gold-foreground hover:opacity-90 shadow-gold">
+                  <ShoppingCart className="h-4 w-4 me-1.5" />{isRTL ? 'اطلب خدمة' : 'Request Service'}
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

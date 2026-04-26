@@ -8,7 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Plus, Trash2, ArrowLeft, ArrowRight, Loader2, Eye, Tag, MapPin, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
 import { SERVICE_CATEGORIES_DATA, type ServiceCategory, SERVICE_CATEGORIES } from '@/types';
 import { useAuthGuard } from '@/hooks/useAuthGuard';

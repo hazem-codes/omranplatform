@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Bell, LogOut, Calculator, ChevronDown, Building2, Ruler, Zap, Shield, Paintbrush, MapPin, FileCheck, ClipboardList, Wrench, FileText, LayoutDashboard, FolderOpen, UserCircle, Upload, MessageSquare } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { notificationService } from '@/services/notificationService';
+import { messagingService } from '@/services/messagingService';
 import omranLogo from '@/assets/omran-logo.png';
 
 const SERVICE_CATEGORIES_NAV = [
@@ -26,15 +27,30 @@ export function Navbar() {
  const { user, isAuthenticated, logout, role } = useAuth();
  const [mobileOpen, setMobileOpen] = useState(false);
  const [megaOpen, setMegaOpen] = useState(false);
- const [unreadCount, setUnreadCount] = useState(0);
- const megaRef = useRef<HTMLDivElement>(null);
- const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const megaRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
- useEffect(() => {
- if (user?.id) {
- notificationService.getUnreadCount(user.id).then(setUnreadCount).catch(() => {});
- }
- }, [user?.id]);
+  useEffect(() => {
+    if (user?.id) {
+      notificationService.getUnreadCount(user.id).then(setUnreadCount).catch(() => {});
+      messagingService
+        .getConversationsByUser(user.id)
+        .then(async (convs) => {
+          const ids = (convs ?? []).map((c: any) => c.id).filter(Boolean);
+          if (ids.length === 0) {
+            setUnreadMessages(0);
+            return;
+          }
+          const counts = await messagingService.getUnreadCountsForUser(user.id, ids);
+          let total = 0;
+          counts.forEach((n) => (total += n));
+          setUnreadMessages(total);
+        })
+        .catch(() => {});
+    }
+  }, [user?.id]);
 
  useEffect(() => {
  function handleClickOutside(e: MouseEvent) {
@@ -212,9 +228,20 @@ export function Navbar() {
  {megaOpen && (role === 'client' ? renderClientMega() : renderPublicMega())}
  </div>
  <Link to="/estimator"><Button variant="ghost" size="sm"><Calculator className="h-4 w-4 me-1" />{isRTL ? 'حاسبة التكاليف' : 'Estimator'}</Button></Link>
- {role === 'client' && (
- <Link to="/client/dashboard"><Button variant="ghost" size="sm">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
- )}
+          {role === 'client' && (
+            <>
+              <Link to="/client/dashboard"><Button variant="ghost" size="sm">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
+              <Link to="/client/inbox" className="relative">
+                <Button variant="ghost" size="sm" className="gap-1">
+                  <MessageSquare className="h-4 w-4" />
+                  {isRTL ? 'الرسائل' : 'Messages'}
+                  {unreadMessages > 0 && (
+                    <span className="ms-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{unreadMessages}</span>
+                  )}
+                </Button>
+              </Link>
+            </>
+          )}
  </>
  )}
 
@@ -274,7 +301,16 @@ export function Navbar() {
  <Link to="/client/templates" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'القوالب الجاهزة' : 'Ready-made Templates'}</Button></Link>
  <Link to="/client/submit-request" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'انشر طلبك' : 'Post Request'}</Button></Link>
  <Link to="/estimator" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'حاسبة التكاليف' : 'Estimator'}</Button></Link>
- <Link to="/client/dashboard" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
+                <Link to="/client/dashboard" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
+                <Link to="/client/inbox" onClick={() => setMobileOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <MessageSquare className="h-4 w-4 me-2" />
+                    {isRTL ? 'الرسائل' : 'Messages'}
+                    {unreadMessages > 0 && (
+                      <span className="ms-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{unreadMessages}</span>
+                    )}
+                  </Button>
+                </Link>
  </>
  )}
  {role === 'engineering_office' && (

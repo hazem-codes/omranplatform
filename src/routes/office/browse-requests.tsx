@@ -217,9 +217,9 @@ function BrowseRequestsPage() {
  {isRTL ? 'قبول' : 'Accept'}
  </Button>
  </div>
- ) : (
+                 ) : (
  /* Custom request: submit bid */
- <Button size="sm" className="bg-gradient-gold text-gold-foreground hover:opacity-90" onClick={() => setBidTarget(req)} disabled={submittingBid}>
+ <Button size="sm" className="bg-gradient-gold text-gold-foreground hover:opacity-90" onClick={() => navigate({ to: '/office/submit-offer/$id', params: { id: req.request_id } })}>
  <Send className="h-3 w-3 me-1" />
  {isRTL ? 'قدّم عرضك' : 'Submit Bid'}
  </Button>

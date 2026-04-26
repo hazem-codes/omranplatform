@@ -15,6 +15,8 @@ const statusColors: Record<string, string> = {
   resolved: 'bg-success/20 text-success border-success/30',
   cancelled: 'bg-muted text-muted-foreground border-border',
   withdrawn: 'bg-muted text-muted-foreground border-border',
+  direct_booking: 'bg-blue-500/20 text-blue-600 border-blue-500/30',
+  needs_clarification: 'bg-orange-500/20 text-orange-600 border-orange-500/30',
 };
 
 export function StatusBadge({ status }: { status: string }) {

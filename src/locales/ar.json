@@ -190,6 +190,8 @@
     "released": "محرر",
     "frozen": "مجمد",
     "open": "مفتوح",
-    "resolved": "تم الحل"
+    "resolved": "تم الحل",
+    "direct_booking": "حجز مباشر",
+    "needs_clarification": "يحتاج توضيح"
   }
 }

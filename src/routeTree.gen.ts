@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as EstimatorRouteImport } from './routes/estimator'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SupervisorInboxRouteImport } from './routes/supervisor/inbox'
 import { Route as SupervisorDisputesRouteImport } from './routes/supervisor/disputes'
 import { Route as SupervisorDashboardRouteImport } from './routes/supervisor/dashboard'
 import { Route as SupervisorAccountsRouteImport } from './routes/supervisor/accounts'
@@ -23,6 +24,7 @@ import { Route as OfficeProfileRouteImport } from './routes/office/profile'
 import { Route as OfficeNearbyRouteImport } from './routes/office/nearby'
 import { Route as OfficeMessagesRouteImport } from './routes/office/messages'
 import { Route as OfficeManageMilestonesRouteImport } from './routes/office/manage-milestones'
+import { Route as OfficeInboxRouteImport } from './routes/office/inbox'
 import { Route as OfficeHomeRouteImport } from './routes/office/home'
 import { Route as OfficeDashboardRouteImport } from './routes/office/dashboard'
 import { Route as OfficeContractSignRouteImport } from './routes/office/contract-sign'
@@ -34,6 +36,7 @@ import { Route as ClientSubmitReportRouteImport } from './routes/client/submit-r
 import { Route as ClientProjectTrackingRouteImport } from './routes/client/project-tracking'
 import { Route as ClientMyRequestsRouteImport } from './routes/client/my-requests'
 import { Route as ClientMilestoneApprovalRouteImport } from './routes/client/milestone-approval'
+import { Route as ClientInboxRouteImport } from './routes/client/inbox'
 import { Route as ClientHomeRouteImport } from './routes/client/home'
 import { Route as ClientEscrowRouteImport } from './routes/client/escrow'
 import { Route as ClientDashboardRouteImport } from './routes/client/dashboard'
@@ -82,6 +85,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupervisorInboxRoute = SupervisorInboxRouteImport.update({
+  id: '/supervisor/inbox',
+  path: '/supervisor/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SupervisorDisputesRoute = SupervisorDisputesRouteImport.update({
   id: '/supervisor/disputes',
   path: '/supervisor/disputes',
@@ -120,6 +128,11 @@ const OfficeMessagesRoute = OfficeMessagesRouteImport.update({
 const OfficeManageMilestonesRoute = OfficeManageMilestonesRouteImport.update({
   id: '/office/manage-milestones',
   path: '/office/manage-milestones',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfficeInboxRoute = OfficeInboxRouteImport.update({
+  id: '/office/inbox',
+  path: '/office/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OfficeHomeRoute = OfficeHomeRouteImport.update({
@@ -175,6 +188,11 @@ const ClientMyRequestsRoute = ClientMyRequestsRouteImport.update({
 const ClientMilestoneApprovalRoute = ClientMilestoneApprovalRouteImport.update({
   id: '/client/milestone-approval',
   path: '/client/milestone-approval',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientInboxRoute = ClientInboxRouteImport.update({
+  id: '/client/inbox',
+  path: '/client/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientHomeRoute = ClientHomeRouteImport.update({
@@ -277,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/client/dashboard': typeof ClientDashboardRoute
   '/client/escrow': typeof ClientEscrowRoute
   '/client/home': typeof ClientHomeRoute
+  '/client/inbox': typeof ClientInboxRoute
   '/client/milestone-approval': typeof ClientMilestoneApprovalRoute
   '/client/my-requests': typeof ClientMyRequestsRoute
   '/client/project-tracking': typeof ClientProjectTrackingRoute
@@ -288,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/office/contract-sign': typeof OfficeContractSignRoute
   '/office/dashboard': typeof OfficeDashboardRoute
   '/office/home': typeof OfficeHomeRoute
+  '/office/inbox': typeof OfficeInboxRoute
   '/office/manage-milestones': typeof OfficeManageMilestonesRoute
   '/office/messages': typeof OfficeMessagesRoute
   '/office/nearby': typeof OfficeNearbyRoute
@@ -296,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/supervisor/accounts': typeof SupervisorAccountsRoute
   '/supervisor/dashboard': typeof SupervisorDashboardRoute
   '/supervisor/disputes': typeof SupervisorDisputesRoute
+  '/supervisor/inbox': typeof SupervisorInboxRoute
   '/client/office/$id': typeof ClientOfficeIdRoute
   '/disputes/$id/details': typeof DisputesIdDetailsRoute
   '/office/chat/$id': typeof OfficeChatIdRoute
@@ -321,6 +342,7 @@ export interface FileRoutesByTo {
   '/client/dashboard': typeof ClientDashboardRoute
   '/client/escrow': typeof ClientEscrowRoute
   '/client/home': typeof ClientHomeRoute
+  '/client/inbox': typeof ClientInboxRoute
   '/client/milestone-approval': typeof ClientMilestoneApprovalRoute
   '/client/my-requests': typeof ClientMyRequestsRoute
   '/client/project-tracking': typeof ClientProjectTrackingRoute
@@ -332,6 +354,7 @@ export interface FileRoutesByTo {
   '/office/contract-sign': typeof OfficeContractSignRoute
   '/office/dashboard': typeof OfficeDashboardRoute
   '/office/home': typeof OfficeHomeRoute
+  '/office/inbox': typeof OfficeInboxRoute
   '/office/manage-milestones': typeof OfficeManageMilestonesRoute
   '/office/messages': typeof OfficeMessagesRoute
   '/office/nearby': typeof OfficeNearbyRoute
@@ -340,6 +363,7 @@ export interface FileRoutesByTo {
   '/supervisor/accounts': typeof SupervisorAccountsRoute
   '/supervisor/dashboard': typeof SupervisorDashboardRoute
   '/supervisor/disputes': typeof SupervisorDisputesRoute
+  '/supervisor/inbox': typeof SupervisorInboxRoute
   '/client/office/$id': typeof ClientOfficeIdRoute
   '/disputes/$id/details': typeof DisputesIdDetailsRoute
   '/office/chat/$id': typeof OfficeChatIdRoute
@@ -366,6 +390,7 @@ export interface FileRoutesById {
   '/client/dashboard': typeof ClientDashboardRoute
   '/client/escrow': typeof ClientEscrowRoute
   '/client/home': typeof ClientHomeRoute
+  '/client/inbox': typeof ClientInboxRoute
   '/client/milestone-approval': typeof ClientMilestoneApprovalRoute
   '/client/my-requests': typeof ClientMyRequestsRoute
   '/client/project-tracking': typeof ClientProjectTrackingRoute
@@ -377,6 +402,7 @@ export interface FileRoutesById {
   '/office/contract-sign': typeof OfficeContractSignRoute
   '/office/dashboard': typeof OfficeDashboardRoute
   '/office/home': typeof OfficeHomeRoute
+  '/office/inbox': typeof OfficeInboxRoute
   '/office/manage-milestones': typeof OfficeManageMilestonesRoute
   '/office/messages': typeof OfficeMessagesRoute
   '/office/nearby': typeof OfficeNearbyRoute
@@ -385,6 +411,7 @@ export interface FileRoutesById {
   '/supervisor/accounts': typeof SupervisorAccountsRoute
   '/supervisor/dashboard': typeof SupervisorDashboardRoute
   '/supervisor/disputes': typeof SupervisorDisputesRoute
+  '/supervisor/inbox': typeof SupervisorInboxRoute
   '/client/office/$id': typeof ClientOfficeIdRoute
   '/disputes/$id/details': typeof DisputesIdDetailsRoute
   '/office/chat/$id': typeof OfficeChatIdRoute
@@ -412,6 +439,7 @@ export interface FileRouteTypes {
     | '/client/dashboard'
     | '/client/escrow'
     | '/client/home'
+    | '/client/inbox'
     | '/client/milestone-approval'
     | '/client/my-requests'
     | '/client/project-tracking'
@@ -423,6 +451,7 @@ export interface FileRouteTypes {
     | '/office/contract-sign'
     | '/office/dashboard'
     | '/office/home'
+    | '/office/inbox'
     | '/office/manage-milestones'
     | '/office/messages'
     | '/office/nearby'
@@ -431,6 +460,7 @@ export interface FileRouteTypes {
     | '/supervisor/accounts'
     | '/supervisor/dashboard'
     | '/supervisor/disputes'
+    | '/supervisor/inbox'
     | '/client/office/$id'
     | '/disputes/$id/details'
     | '/office/chat/$id'
@@ -456,6 +486,7 @@ export interface FileRouteTypes {
     | '/client/dashboard'
     | '/client/escrow'
     | '/client/home'
+    | '/client/inbox'
     | '/client/milestone-approval'
     | '/client/my-requests'
     | '/client/project-tracking'
@@ -467,6 +498,7 @@ export interface FileRouteTypes {
     | '/office/contract-sign'
     | '/office/dashboard'
     | '/office/home'
+    | '/office/inbox'
     | '/office/manage-milestones'
     | '/office/messages'
     | '/office/nearby'
@@ -475,6 +507,7 @@ export interface FileRouteTypes {
     | '/supervisor/accounts'
     | '/supervisor/dashboard'
     | '/supervisor/disputes'
+    | '/supervisor/inbox'
     | '/client/office/$id'
     | '/disputes/$id/details'
     | '/office/chat/$id'
@@ -500,6 +533,7 @@ export interface FileRouteTypes {
     | '/client/dashboard'
     | '/client/escrow'
     | '/client/home'
+    | '/client/inbox'
     | '/client/milestone-approval'
     | '/client/my-requests'
     | '/client/project-tracking'
@@ -511,6 +545,7 @@ export interface FileRouteTypes {
     | '/office/contract-sign'
     | '/office/dashboard'
     | '/office/home'
+    | '/office/inbox'
     | '/office/manage-milestones'
     | '/office/messages'
     | '/office/nearby'
@@ -519,6 +554,7 @@ export interface FileRouteTypes {
     | '/supervisor/accounts'
     | '/supervisor/dashboard'
     | '/supervisor/disputes'
+    | '/supervisor/inbox'
     | '/client/office/$id'
     | '/disputes/$id/details'
     | '/office/chat/$id'
@@ -545,6 +581,7 @@ export interface RootRouteChildren {
   ClientDashboardRoute: typeof ClientDashboardRoute
   ClientEscrowRoute: typeof ClientEscrowRoute
   ClientHomeRoute: typeof ClientHomeRoute
+  ClientInboxRoute: typeof ClientInboxRoute
   ClientMilestoneApprovalRoute: typeof ClientMilestoneApprovalRoute
   ClientMyRequestsRoute: typeof ClientMyRequestsRoute
   ClientProjectTrackingRoute: typeof ClientProjectTrackingRoute
@@ -556,6 +593,7 @@ export interface RootRouteChildren {
   OfficeContractSignRoute: typeof OfficeContractSignRoute
   OfficeDashboardRoute: typeof OfficeDashboardRoute
   OfficeHomeRoute: typeof OfficeHomeRoute
+  OfficeInboxRoute: typeof OfficeInboxRoute
   OfficeManageMilestonesRoute: typeof OfficeManageMilestonesRoute
   OfficeMessagesRoute: typeof OfficeMessagesRoute
   OfficeNearbyRoute: typeof OfficeNearbyRoute
@@ -564,6 +602,7 @@ export interface RootRouteChildren {
   SupervisorAccountsRoute: typeof SupervisorAccountsRoute
   SupervisorDashboardRoute: typeof SupervisorDashboardRoute
   SupervisorDisputesRoute: typeof SupervisorDisputesRoute
+  SupervisorInboxRoute: typeof SupervisorInboxRoute
   ClientOfficeIdRoute: typeof ClientOfficeIdRoute
   DisputesIdDetailsRoute: typeof DisputesIdDetailsRoute
   OfficeChatIdRoute: typeof OfficeChatIdRoute
@@ -620,6 +659,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/supervisor/inbox': {
+      id: '/supervisor/inbox'
+      path: '/supervisor/inbox'
+      fullPath: '/supervisor/inbox'
+      preLoaderRoute: typeof SupervisorInboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/supervisor/disputes': {
       id: '/supervisor/disputes'
       path: '/supervisor/disputes'
@@ -674,6 +720,13 @@ declare module '@tanstack/react-router' {
       path: '/office/manage-milestones'
       fullPath: '/office/manage-milestones'
       preLoaderRoute: typeof OfficeManageMilestonesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/office/inbox': {
+      id: '/office/inbox'
+      path: '/office/inbox'
+      fullPath: '/office/inbox'
+      preLoaderRoute: typeof OfficeInboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/office/home': {
@@ -751,6 +804,13 @@ declare module '@tanstack/react-router' {
       path: '/client/milestone-approval'
       fullPath: '/client/milestone-approval'
       preLoaderRoute: typeof ClientMilestoneApprovalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/client/inbox': {
+      id: '/client/inbox'
+      path: '/client/inbox'
+      fullPath: '/client/inbox'
+      preLoaderRoute: typeof ClientInboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/client/home': {
@@ -889,6 +949,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientDashboardRoute: ClientDashboardRoute,
   ClientEscrowRoute: ClientEscrowRoute,
   ClientHomeRoute: ClientHomeRoute,
+  ClientInboxRoute: ClientInboxRoute,
   ClientMilestoneApprovalRoute: ClientMilestoneApprovalRoute,
   ClientMyRequestsRoute: ClientMyRequestsRoute,
   ClientProjectTrackingRoute: ClientProjectTrackingRoute,
@@ -900,6 +961,7 @@ const rootRouteChildren: RootRouteChildren = {
   OfficeContractSignRoute: OfficeContractSignRoute,
   OfficeDashboardRoute: OfficeDashboardRoute,
   OfficeHomeRoute: OfficeHomeRoute,
+  OfficeInboxRoute: OfficeInboxRoute,
   OfficeManageMilestonesRoute: OfficeManageMilestonesRoute,
   OfficeMessagesRoute: OfficeMessagesRoute,
   OfficeNearbyRoute: OfficeNearbyRoute,
@@ -908,6 +970,7 @@ const rootRouteChildren: RootRouteChildren = {
   SupervisorAccountsRoute: SupervisorAccountsRoute,
   SupervisorDashboardRoute: SupervisorDashboardRoute,
   SupervisorDisputesRoute: SupervisorDisputesRoute,
+  SupervisorInboxRoute: SupervisorInboxRoute,
   ClientOfficeIdRoute: ClientOfficeIdRoute,
   DisputesIdDetailsRoute: DisputesIdDetailsRoute,
   OfficeChatIdRoute: OfficeChatIdRoute,

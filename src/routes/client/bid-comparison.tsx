@@ -25,6 +25,7 @@ function BidComparisonPage() {
   const { allowed, isLoading: guardLoading } = useAuthGuard('client');
   const { request_id } = Route.useSearch();
   const [bids, setBids] = useState<any[]>([]);
+  const [officeNames, setOfficeNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -33,7 +34,22 @@ function BidComparisonPage() {
     try {
       setLoading(true);
       const data = await bidService.getBidsForRequest(request_id);
-      setBids(data ?? []);
+      const bidList = data ?? [];
+      setBids(bidList);
+
+      // Enrich with office names so the office column links to the public profile.
+      const officeIds = Array.from(new Set(bidList.map((b: any) => b.office_id).filter(Boolean)));
+      if (officeIds.length > 0) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, name')
+          .in('id', officeIds);
+        const map: Record<string, string> = {};
+        for (const p of (profs ?? [])) map[p.id] = p.name || '';
+        setOfficeNames(map);
+      } else {
+        setOfficeNames({});
+      }
     } catch { setBids([]); }
     finally { setLoading(false); }
   };
@@ -147,7 +163,8 @@ function BidComparisonPage() {
                       )}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}

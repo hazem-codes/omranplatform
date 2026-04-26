@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Bell, LogOut, Calculator, ChevronDown, Building2, Ruler, Zap, Shield, Paintbrush, MapPin, FileCheck, ClipboardList, Wrench, FileText, LayoutDashboard, FolderOpen, UserCircle, Upload, MessageSquare } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { notificationService } from '@/services/notificationService';
+import { messagingService } from '@/services/messagingService';
 import omranLogo from '@/assets/omran-logo.png';
 
 const SERVICE_CATEGORIES_NAV = [

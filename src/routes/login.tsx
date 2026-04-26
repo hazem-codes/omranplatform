@@ -170,63 +170,68 @@ function LoginPage() {
  );
 }
 
-const DEMO_ACCOUNTS = [
- { role: 'عميل', email: 'client@mimaar.demo', password: 'Demo@1234' },
- { role: 'مكتب هندسي', email: 'office@mimaar.demo', password: 'Demo@1234' },
- { role: 'مشرف', email: 'supervisor@mimaar.demo', password: 'Demo@1234' },
+type DemoCreds = { email: string; password: string };
+
+const DEMO_ACCOUNTS: Array<{
+ key: 'client' | 'office' | 'supervisor';
+ ar: string;
+ en: string;
+ icon: typeof User;
+ email: string;
+ password: string;
+}> = [
+ { key: 'client', ar: 'عميل تجريبي', en: 'Demo Client', icon: User, email: 'client@mimaar.demo', password: 'Demo@1234' },
+ { key: 'office', ar: 'مكتب هندسي تجريبي', en: 'Demo Engineering Office', icon: Building2, email: 'office@mimaar.demo', password: 'Demo@1234' },
+ { key: 'supervisor', ar: 'مشرف تجريبي', en: 'Demo Supervisor', icon: ShieldCheck, email: 'supervisor@mimaar.demo', password: 'Demo@1234' },
 ];
 
-function DemoAccountsPanel() {
- const [open, setOpen] = useState(false);
+function DemoAccountsPanel({ isRTL, onFill }: { isRTL: boolean; onFill: (creds: DemoCreds) => void }) {
+ const [activeKey, setActiveKey] = useState<string | null>(null);
 
- const copy = async (val: string, label: string) => {
- try {
- await navigator.clipboard.writeText(val);
- toast.success(`تم نسخ ${label}`);
- } catch {
- toast.error('فشل النسخ');
- }
+ const handleClick = (acc: typeof DEMO_ACCOUNTS[number]) => {
+   setActiveKey(acc.key);
+   onFill({ email: acc.email, password: acc.password });
+   toast.success(isRTL ? `تم تعبئة بيانات ${acc.ar}` : `Filled ${acc.en} credentials`);
+   window.setTimeout(() => setActiveKey(null), 900);
  };
 
  return (
- <Collapsible open={open} onOpenChange={setOpen} className="rounded-2xl border bg-card">
- <CollapsibleTrigger asChild>
- <button
- type="button"
- className="flex w-full items-center justify-between px-5 py-3 text-sm font-medium text-foreground hover:bg-accent/40 rounded-2xl"
- >
- <span className="flex items-center gap-2">
- حسابات تجريبية
- <span className="rounded-full border bg-accent px-2 py-0.5 text-[10px] text-muted-foreground">
- للاختبار والعرض فقط
- </span>
- </span>
- <ChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
- </button>
- </CollapsibleTrigger>
- <CollapsibleContent className="border-t">
- <div className="divide-y">
- {DEMO_ACCOUNTS.map((acc) => (
- <div key={acc.email} className="grid grid-cols-1 gap-2 p-4 sm:grid-cols-[100px_1fr_1fr]">
- <div className="text-sm font-semibold text-primary">{acc.role}</div>
- <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-1">
- <span className="truncate text-xs" dir="ltr">{acc.email}</span>
- <Button type="button" size="sm" variant="ghost" className="h-7 px-2" onClick={() => copy(acc.email, 'البريد')}>
- <Copy className="h-3.5 w-3.5" />
- <span className="ms-1 text-xs">نسخ</span>
- </Button>
- </div>
- <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-1">
- <span className="truncate text-xs" dir="ltr">{acc.password}</span>
- <Button type="button" size="sm" variant="ghost" className="h-7 px-2" onClick={() => copy(acc.password, 'كلمة المرور')}>
- <Copy className="h-3.5 w-3.5" />
- <span className="ms-1 text-xs">نسخ</span>
- </Button>
- </div>
- </div>
- ))}
- </div>
- </CollapsibleContent>
- </Collapsible>
+   <div className="rounded-2xl border bg-card p-4 shadow-sm">
+     <div className="mb-3 flex items-center justify-between">
+       <span className="text-sm font-semibold text-foreground">
+         {isRTL ? 'حسابات تجريبية' : 'Demo Accounts'}
+       </span>
+       <span className="rounded-full border bg-accent px-2 py-0.5 text-[10px] text-muted-foreground">
+         {isRTL ? 'للاختبار والعرض فقط' : 'For testing & demo only'}
+       </span>
+     </div>
+     <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+       {DEMO_ACCOUNTS.map((acc) => {
+         const Icon = acc.icon;
+         const isActive = activeKey === acc.key;
+         return (
+           <button
+             key={acc.key}
+             type="button"
+             onClick={() => handleClick(acc)}
+             className={`group flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold/5 hover:shadow-md ${
+               isActive ? 'border-gold bg-gold/10 ring-2 ring-gold/40 scale-[1.02]' : 'border-border bg-background'
+             }`}
+             aria-label={isRTL ? acc.ar : acc.en}
+           >
+             <span className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${isActive ? 'bg-gold text-gold-foreground' : 'bg-accent text-foreground group-hover:bg-gold/20 group-hover:text-gold'}`}>
+               <Icon className="h-4 w-4" />
+             </span>
+             <span className="text-xs font-semibold text-foreground leading-tight">
+               {isRTL ? acc.ar : acc.en}
+             </span>
+             <span className="text-[10px] text-muted-foreground truncate w-full" dir="ltr">
+               {acc.email}
+             </span>
+           </button>
+         );
+       })}
+     </div>
+   </div>
  );
 }

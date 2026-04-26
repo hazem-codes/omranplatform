@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { supervisorService } from '@/services/supervisorService';
 import { bidService } from '@/services/bidService';
+import { messagingService } from '@/services/messagingService';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import {

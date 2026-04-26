@@ -206,6 +206,26 @@ function BidComparisonPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Chat with the winning office once a bid is accepted. */}
+      {(() => {
+        const accepted = bids.find((b: any) => b.status === 'accepted');
+        if (!accepted || !user?.id) return null;
+        return (
+          <div className="mt-6">
+            <ConversationPanel
+              type="project_request"
+              referenceId={request_id}
+              referenceTitle={requestInfo.title}
+              clientId={requestInfo.client_id ?? user.id}
+              officeId={accepted.office_id}
+              currentUserId={user.id}
+              isRTL={isRTL}
+              defaultOpen={false}
+            />
+          </div>
+        );
+      })()}
     </div>
   );
 }

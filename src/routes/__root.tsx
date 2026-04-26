@@ -47,8 +47,8 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "عمران — خدمات هندسية احترافية" },
       { name: "twitter:description", content: "عمران تربط أصحاب المشاريع بالمكاتب الهندسية المعتمدة في المملكة العربية السعودية" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/18b486ff-5a2d-4931-9d5b-560b8191da97/id-preview-8e5b4369--dacd3ba8-bccf-4c39-88fd-687c3d20d7de.lovable.app-1777163774008.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/18b486ff-5a2d-4931-9d5b-560b8191da97/id-preview-8e5b4369--dacd3ba8-bccf-4c39-88fd-687c3d20d7de.lovable.app-1777163774008.png" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3c0d38e-93a6-4e72-b574-00ec0eeadde5/id-preview-a94f0084--5feeaa8f-230f-47f2-b50c-e641f3ce0e1f.lovable.app-1777166428675.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3c0d38e-93a6-4e72-b574-00ec0eeadde5/id-preview-a94f0084--5feeaa8f-230f-47f2-b50c-e641f3ce0e1f.lovable.app-1777166428675.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
      links: [

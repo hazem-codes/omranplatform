@@ -118,7 +118,12 @@ function ClientDashboard() {
  <div key={req.request_id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
  <div>
  <p className="font-medium">{req.title}</p>
- <p className="text-sm text-muted-foreground">{req.location} • {req.budget_range}</p>
+ <p className="text-sm text-muted-foreground">
+ {req.location} • {req.budget_range}
+ {typeof req.bids_count === 'number' && (
+ <> • {req.bids_count} {isRTL ? 'عرض' : 'bids'}</>
+ )}
+ </p>
  </div>
  <StatusBadge status={req.status || 'pending'} />
  </div>

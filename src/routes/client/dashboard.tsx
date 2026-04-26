@@ -23,19 +23,12 @@ function ClientDashboard() {
 
  useEffect(() => {
  if (!user?.id || !allowed) return;
- projectRequestService.getByClient(user.id).then(async (reqs) => {
+ projectRequestService.getClientRequestsWithBidCount(user.id).then(async (reqs) => {
  setRequests(reqs ?? []);
- // Count real bids across approved requests
- let count = 0;
- for (const req of (reqs ?? [])) {
- if (req.status === 'approved') {
  try {
- const bids = await bidService.getBidsForRequest(req.request_id);
- count += (bids ?? []).filter((b: any) => b.status === 'submitted').length;
- } catch {}
- }
- }
- setTotalBids(count);
+ const allBids = await bidService.getBidsForClient(user.id);
+ setTotalBids((allBids ?? []).filter((b: any) => b.status === 'submitted').length);
+ } catch { setTotalBids(0); }
  }).catch(() => {});
  }, [user?.id, allowed]);
 

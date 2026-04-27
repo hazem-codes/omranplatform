@@ -196,6 +196,15 @@ export function Navbar() {
  <Link to="/supervisor/disputes">
  <Button variant="ghost" size="sm">{isRTL ? 'النزاعات' : 'Disputes'}</Button>
  </Link>
+ <Link to="/supervisor/inbox" className="relative">
+   <Button variant="ghost" size="sm" className="gap-1">
+     <MessageSquare className="h-4 w-4" />
+     {isRTL ? 'الرسائل' : 'Messages'}
+     {unreadMessages > 0 && (
+       <span className="ms-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{unreadMessages}</span>
+     )}
+   </Button>
+ </Link>
  </>
  );
 
@@ -329,6 +338,15 @@ export function Navbar() {
  <Link to="/supervisor/dashboard" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Button></Link>
  <Link to="/supervisor/accounts" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'الحسابات' : 'Accounts'}</Button></Link>
  <Link to="/supervisor/disputes" onClick={() => setMobileOpen(false)}><Button variant="ghost" className="w-full justify-start">{isRTL ? 'النزاعات' : 'Disputes'}</Button></Link>
+ <Link to="/supervisor/inbox" onClick={() => setMobileOpen(false)}>
+   <Button variant="ghost" className="w-full justify-start">
+     <MessageSquare className="h-4 w-4 me-2" />
+     {isRTL ? 'الرسائل' : 'Messages'}
+     {unreadMessages > 0 && (
+       <span className="ms-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{unreadMessages}</span>
+     )}
+   </Button>
+ </Link>
  </>
  )}
  {isAuthenticated && (

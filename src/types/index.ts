@@ -707,6 +707,32 @@ export const SERVICE_CATEGORIES_DATA: Record<ServiceCategory, { ar: string; en: 
   },
 };
 
+// ===== Arabic → Category Key normalization =====
+// The DB may store either English enum keys OR Arabic display strings (legacy seed).
+// This map normalizes Arabic variants → canonical English key so lookups always work.
+const ARABIC_TO_CATEGORY_KEY: Record<string, ServiceCategory> = {
+  'التصميم المعماري':                 'architectural_design',
+  'تصميم معماري':                      'architectural_design',
+  'تصميم داخلي':                       'architectural_design',
+  'الهندسة الإنشائية':                 'structural_engineering',
+  'تصميم إنشائي':                      'structural_engineering',
+  'دراسات تربة':                       'structural_engineering',
+  'هندسة الميكانيكا والكهرباء والسباكة': 'mep_engineering',
+  'مخططات MEP':                        'mep_engineering',
+  'الاستشارات الهندسية':               'permits_consulting',
+  'استشارات هندسية':                   'permits_consulting',
+  'مخططات وتصاريح':                    'permits_consulting',
+  'الإشراف على التشييد':               'construction_supervision',
+  'إشراف هندسي':                       'construction_supervision',
+  'إدارة المشاريع':                    'full_construction',
+  'أعمال التشطيبات':                   'finishing_works',
+  'المساحة والرفع الطبوغرافي':         'surveying_geomatics',
+};
+
+export function normalizeCategoryKey(category: string): ServiceCategory | string {
+  return ARABIC_TO_CATEGORY_KEY[category] ?? category;
+}
+
 // ===== Saudi Cities =====
 export const SAUDI_CITIES = [
   { ar: 'الرياض', en: 'Riyadh' },

@@ -137,10 +137,9 @@ function CostEstimatorPage() {
     if (land <= 0) return;
 
     const manualBuilt = toNumber(builtUpArea);
-    const builtFactor = PROJECT_DENSITY_FACTOR[projectType];
-    const effectiveBuilt = manualBuilt > 0
-      ? manualBuilt
-      : Math.max(land * builtFactor * (projectType === 'rest_house' ? 1 : floorsNum), land * 0.35);
+    // When built_area is empty/0, default to land area instead of guessing via
+    // density × floors (which can exceed the land itself for multi-storey input).
+    const effectiveBuilt = manualBuilt > 0 ? manualBuilt : land;
 
     const rates = PROJECT_BASE_RATES[projectType];
     const [structureMinRate, structureMaxRate] = rates.structure;

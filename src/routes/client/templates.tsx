@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Star, Eye, ShoppingCart, FileText, MapPin, Filter, ArrowLeft, ArrowRight, Loader2, FileImage, Package, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
-import { SERVICE_CATEGORIES_DATA, type ServiceCategory, SERVICE_CATEGORIES } from '@/types';
+import { SERVICE_CATEGORIES_DATA, type ServiceCategory, SERVICE_CATEGORIES, normalizeCategoryKey } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 
@@ -17,17 +17,19 @@ export const Route = createFileRoute('/client/templates')({
  component: TemplatesPage,
 });
 
-// Curated, professional category cover images (Unsplash, free to use).
-// Used as a high-quality fallback when a template has no preview_image_url.
+// Category fallback images when a template has no preview_image_url.
 const CATEGORY_COVERS: Record<string, string> = {
- architectural_design: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=70',
- structural_engineering: 'https://images.unsplash.com/photo-1581094271901-8022df4466f9?auto=format&fit=crop&w=900&q=70',
- construction_supervision: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=70',
- mep_engineering: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=900&q=70',
- finishing_works: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=70',
- engineering_consultations: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=70',
- surveying: 'https://images.unsplash.com/photo-1606189934846-a527add8a77b?auto=format&fit=crop&w=900&q=70',
- project_management: 'https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=900&q=70',
+  architectural_design:    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400',
+  structural_engineering:  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+  mep_engineering:         'https://images.unsplash.com/photo-1621905251189-08b45249ff78?w=400',
+  permits_consulting:      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+  construction_supervision:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400',
+  full_construction:       'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
+  finishing_works:         'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400',
+  surveying_geomatics:     'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
+  engineering_consultations:'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+  project_management:      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
+  surveying:               'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
 };
 
 const DEFAULT_INCLUDED = [
@@ -61,13 +63,15 @@ function TemplatesPage() {
  if (!allowed) return guardLoading ? <div className="flex min-h-[60vh] items-center justify-center"><span className="text-muted-foreground">جاري التحقق...</span></div> : null;
 
  const allTemplates = dbTemplates.map((t: any) => {
- const cat = SERVICE_CATEGORIES_DATA[t.category as ServiceCategory];
+ const catKey = normalizeCategoryKey(t.category) as ServiceCategory;
+ const cat = SERVICE_CATEGORIES_DATA[catKey];
  const subLabel = cat?.subcategories?.find((s: any) => s.key === t.sub_category);
  const office = Array.isArray(t.engineering_offices) ? t.engineering_offices[0] : t.engineering_offices;
  const officeName = office?.public_profiles?.name || office?.profiles?.name || '';
  const officeCity = office?.city || office?.coverage_area || '';
  return {
  ...t,
+ _catKey: catKey,
  titleEn: t.title || '',
  descriptionEn: t.description || '',
  catLabelAr: cat?.ar || t.category || (isRTL ? 'غير مصنف' : 'Uncategorized'),
@@ -84,12 +88,12 @@ function TemplatesPage() {
  officeType: office?.office_type || '',
  officePortfolio: office?.portfolio_preview || [],
  officePortfolioCount: office?.portfolio_count || 0,
- coverImage: t.preview_image_url || CATEGORY_COVERS[t.category] || CATEGORY_COVERS.architectural_design,
+ coverImage: t.preview_image_url || CATEGORY_COVERS[catKey] || CATEGORY_COVERS.architectural_design,
  };
  });
 
  let filtered = allTemplates;
- if (selectedCategory && selectedCategory !== 'all') filtered = filtered.filter(t => t.category === selectedCategory);
+ if (selectedCategory && selectedCategory !== 'all') filtered = filtered.filter(t => t._catKey === selectedCategory);
  if (priceRange === 'under1000') filtered = filtered.filter(t => (t.price || 0) < 1000);
  else if (priceRange === '1000to3000') filtered = filtered.filter(t => (t.price || 0) >= 1000 && (t.price || 0) <= 3000);
  else if (priceRange === 'above3000') filtered = filtered.filter(t => (t.price || 0) > 3000);

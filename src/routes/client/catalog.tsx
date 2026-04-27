@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ShoppingCart, Sparkles, Star, MapPin, Building2, Eye, ArrowLeft, ArrowRight, Loader2, ShieldCheck, Package, Clock } from 'lucide-react';
 import { toast } from 'sonner';
-import { SERVICE_CATEGORIES_DATA, SAUDI_CITIES, type ServiceCategory, SERVICE_CATEGORIES } from '@/types';
+import { SERVICE_CATEGORIES_DATA, SAUDI_CITIES, type ServiceCategory, SERVICE_CATEGORIES, normalizeCategoryKey } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { projectRequestService } from '@/services/projectRequestService';
 import { notificationService } from '@/services/notificationService';
@@ -21,20 +21,20 @@ export const Route = createFileRoute('/client/catalog')({
  component: ServiceCatalogPage,
 });
 
-// Premium category covers shared between templates and services for visual consistency.
+// Category cover images — one canonical URL per category key.
 const SERVICE_COVERS: Record<string, string> = {
- architectural_design: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=70',
- structural_engineering: 'https://images.unsplash.com/photo-1581094271901-8022df4466f9?auto=format&fit=crop&w=900&q=70',
- construction_supervision: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=900&q=70',
- mep_engineering: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=900&q=70',
- finishing_works: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=70',
- engineering_consultations: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=70',
- surveying: 'https://images.unsplash.com/photo-1606189934846-a527add8a77b?auto=format&fit=crop&w=900&q=70',
- project_management: 'https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=900&q=70',
- // Legacy keys still used by some seeded data
- permits_consulting: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=70',
- full_construction: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=70',
- surveying_geomatics: 'https://images.unsplash.com/photo-1606189934846-a527add8a77b?auto=format&fit=crop&w=900&q=70',
+  architectural_design:   'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400',
+  structural_engineering: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+  mep_engineering:        'https://images.unsplash.com/photo-1621905251189-08b45249ff78?w=400',
+  permits_consulting:     'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+  construction_supervision:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400',
+  full_construction:      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
+  finishing_works:        'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400',
+  surveying_geomatics:    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
+  // Aliases kept for backward compat
+  engineering_consultations:'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+  project_management:     'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
+  surveying:              'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
 };
 
 const DEFAULT_DELIVERABLES = [
@@ -68,13 +68,15 @@ function ServiceCatalogPage() {
  if (!allowed) return guardLoading ? <div className="flex min-h-[60vh] items-center justify-center"><span className="text-muted-foreground">جاري التحقق...</span></div> : null;
 
  const allItems = dbItems.map((item: any) => {
- const cat = SERVICE_CATEGORIES_DATA[item.category as ServiceCategory];
+ const catKey = normalizeCategoryKey(item.category) as ServiceCategory;
+ const cat = SERVICE_CATEGORIES_DATA[catKey];
  const sub = cat?.subcategories.find((s: any) => s.key === item.sub_category);
  const office = Array.isArray(item.engineering_offices) ? item.engineering_offices[0] : item.engineering_offices;
  const profileName = office?.public_profiles?.name || office?.profiles?.name || '';
  const officeCity = office?.city || office?.coverage_area || '';
  return {
  ...item,
+ _catKey: catKey,
  officeName: profileName,
  officeNameEn: profileName,
  officeCity,
@@ -93,11 +95,11 @@ function ServiceCatalogPage() {
  catLabelEn: cat?.en || item.category,
  subLabelAr: sub?.ar || item.sub_category,
  subLabelEn: sub?.en || item.sub_category,
- coverImage: SERVICE_COVERS[item.category] || SERVICE_COVERS.architectural_design,
+ coverImage: SERVICE_COVERS[catKey] || SERVICE_COVERS.architectural_design,
  };
  });
 
- const filtered = selectedCategory ? allItems.filter(i => i.category === selectedCategory) : allItems;
+ const filtered = selectedCategory ? allItems.filter(i => i._catKey === selectedCategory) : allItems;
 
  const handleBook = async () => {
  if (!user?.id || !bookingItem) return;
@@ -212,7 +214,7 @@ Requirements:
  {isRTL ? 'الكل' : 'All'} ({allItems.length})
  </button>
  {SERVICE_CATEGORIES.map(key => {
- const count = allItems.filter(i => i.category === key).length;
+ const count = allItems.filter(i => i._catKey === key).length;
  return (
  <button key={key} onClick={() => setSelectedCategory(key)}
  className={`rounded-full px-4 py-2 text-sm font-medium border transition-all ${selectedCategory === key ? 'bg-gold/20 border-gold text-gold' : 'border-border hover:border-gold/30'}`}>

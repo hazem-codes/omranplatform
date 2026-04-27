@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Trash2, ArrowLeft, ArrowRight, Loader2, Eye, Tag, MapPin, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
-import { SERVICE_CATEGORIES_DATA, type ServiceCategory, SERVICE_CATEGORIES } from '@/types';
+import { SERVICE_CATEGORIES_DATA, type ServiceCategory, SERVICE_CATEGORIES, normalizeCategoryKey } from '@/types';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 
 export const Route = createFileRoute('/office/catalog')({
@@ -89,42 +89,38 @@ function CatalogPage() {
   };
 
   const labelCat = (key: string) => {
-    const cat = SERVICE_CATEGORIES_DATA[key as ServiceCategory];
+    const normalized = normalizeCategoryKey(key) as ServiceCategory;
+    const cat = SERVICE_CATEGORIES_DATA[normalized];
     return cat ? (isRTL ? cat.ar : cat.en) : key;
   };
   const labelSub = (catKey: string, subKey: string) => {
-    const cat = SERVICE_CATEGORIES_DATA[catKey as ServiceCategory];
+    const normalized = normalizeCategoryKey(catKey) as ServiceCategory;
+    const cat = SERVICE_CATEGORIES_DATA[normalized];
     const sub = cat?.subcategories.find(s => s.key === subKey);
     return sub ? (isRTL ? sub.ar : sub.en) : subKey;
   };
   const pricingLabel = (model: string) =>
     model === 'per_m2' ? (isRTL ? 'بالمتر المربع' : 'Per m²') : (isRTL ? 'سعر ثابت' : 'Fixed Price');
 
-  // Default cover image per service category. Keys cover both English DB enum keys
-  // and the Arabic labels requested in the spec, so either resolves to an image.
+  // Category cover images — matches the canonical Unsplash set used site-wide.
   const CATEGORY_IMAGES: Record<string, string> = {
-    architectural_design: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400',
-    'تصميم معماري': 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400',
-    interior_design: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400',
-    'تصميم داخلي': 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400',
-    construction_supervision: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400',
-    'إشراف هندسي': 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400',
-    structural_engineering: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-    'تصميم إنشائي': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-    soil_studies: 'https://images.unsplash.com/photo-1590496793929-36417d3117de?w=400',
-    'دراسات تربة': 'https://images.unsplash.com/photo-1590496793929-36417d3117de?w=400',
-    mep_engineering: 'https://images.unsplash.com/photo-1621905251189-08b45249ff78?w=400',
-    'مخططات MEP': 'https://images.unsplash.com/photo-1621905251189-08b45249ff78?w=400',
-    engineering_consultations: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
-    'استشارات هندسية': 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
-    permits_consulting: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
-    'مخططات وتصاريح': 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
+    architectural_design:    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400',
+    structural_engineering:  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    mep_engineering:         'https://images.unsplash.com/photo-1621905251189-08b45249ff78?w=400',
+    permits_consulting:      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+    construction_supervision:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400',
+    full_construction:       'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
+    finishing_works:         'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400',
+    surveying_geomatics:     'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400',
+    engineering_consultations:'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+    project_management:      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
   };
   const imageFor = (item: any): string => {
+    const catKey = normalizeCategoryKey(item?.category ?? '');
     return (
       item?.image_url ||
+      CATEGORY_IMAGES[catKey] ||
       CATEGORY_IMAGES[item?.category] ||
-      CATEGORY_IMAGES[labelCat(item?.category)] ||
       'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400'
     );
   };

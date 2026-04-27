@@ -143,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role: string,
     meta?: Record<string, string>
   ) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -151,6 +151,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
     if (error) throw error;
+
+    // When email auto-confirm is enabled, data.user is immediately available
+    // and the session is active — create role-specific rows right away so
+    // resolvePostAuthDestination() finds a complete record on first login.
+    const newUser = data.user;
+    if (newUser) {
+      // Profiles row (trigger may create it; upsert is idempotent)
+      try {
+        await supabase.from('profiles').upsert({
+          id: newUser.id,
+          email,
+          name,
+          role: role as any,
+        });
+      } catch {}
+
+      if (role === 'engineering_office') {
+        try {
+          await supabase.from('engineering_offices').upsert({
+            id: newUser.id,
+            license_number: meta?.license_number || '',
+            license_expiry_date: meta?.license_expiry_date || null,
+            coverage_area: meta?.coverage_area || null,
+            phone: meta?.phone || null,
+            city: meta?.city || null,
+            office_type: meta?.office_type || null,
+            years_of_experience: meta?.years_of_experience || null,
+            is_verified: false,
+            is_active: false,
+          } as any);
+        } catch {}
+      } else if (role === 'client') {
+        try {
+          await supabase.from('clients').upsert({
+            id: newUser.id,
+            phone: meta?.phone || null,
+          });
+        } catch {}
+      } else if (role === 'supervisor') {
+        try {
+          await supabase.from('supervisors').upsert({
+            id: newUser.id,
+            phone: meta?.phone || null,
+          });
+        } catch {}
+      }
+    }
   };
 
   const logout = async () => {

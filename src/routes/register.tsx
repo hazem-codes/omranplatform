@@ -396,47 +396,53 @@ function RegisterPage() {
  <Input value={form.name} onChange={e => update('name', e.target.value)} required />
  </div>
 
- <div className="space-y-2">
- <Label>{isRTL ? 'رقم الهاتف' : 'Phone Number'}{form.role === 'engineering_office' ? ' (05xxxxxxxx)' : ''}</Label>
- <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} dir="ltr" placeholder="05xxxxxxxx" required />
- </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رقم الهاتف' : 'Phone Number'}{form.role === 'engineering_office' ? ' (05xxxxxxxx)' : ''}</Label>
+  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} dir="ltr" placeholder="05xxxxxxxx" required maxLength={10} aria-invalid={!!fieldErrors.phone} data-field-error={fieldErrors.phone ? 'true' : undefined} className={fieldErrors.phone ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.phone && <p className="text-xs font-medium text-destructive">{fieldErrors.phone}</p>}
+  </div>
 
- {form.role === 'engineering_office' && (
- <div className="space-y-4 rounded-xl border border-gold/20 bg-gold/5 p-4">
- <div className="space-y-2">
- <Label>{isRTL ? 'رقم الترخيص (هيئة المهندسين السعوديين)' : 'License Number (Saudi Engineers Authority)'}</Label>
- <Input value={form.license_number} onChange={e => update('license_number', e.target.value)} required dir="ltr" placeholder="SE-XXXXX" />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'تاريخ انتهاء الترخيص' : 'License Expiry Date'}</Label>
- <Input type="date" value={form.license_expiry_date} onChange={e => update('license_expiry_date', e.target.value)} required dir="ltr" />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'رفع صورة الرخصة (PDF أو صورة)' : 'Upload License File (PDF or Image)'}</Label>
- <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setLicenseFile(e.target.files?.[0] || null)} />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'المدينة' : 'City'}</Label>
- <Select value={form.city} onValueChange={v => update('city', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
- <SelectContent>
- {SAUDI_CITIES.map(c => (
- <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
- <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
- <SelectContent>
- {OFFICE_TYPES.map(t => (
- <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
+  {form.role === 'engineering_office' && (
+  <div className="space-y-4 rounded-xl border border-gold/20 bg-gold/5 p-4">
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رقم الترخيص (هيئة المهندسين السعوديين)' : 'License Number (Saudi Engineers Authority)'}</Label>
+  <Input value={form.license_number} onChange={e => update('license_number', e.target.value.toUpperCase())} required dir="ltr" placeholder="SE-12345" maxLength={8} aria-invalid={!!fieldErrors.license_number} data-field-error={fieldErrors.license_number ? 'true' : undefined} className={fieldErrors.license_number ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  <p className="text-[11px] text-muted-foreground">{isRTL ? 'الصيغة: SE- متبوعة بـ 5 أرقام' : 'Format: SE- followed by 5 digits'}</p>
+  {fieldErrors.license_number && <p className="text-xs font-medium text-destructive">{fieldErrors.license_number}</p>}
+  </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'تاريخ انتهاء الترخيص' : 'License Expiry Date'}</Label>
+  <Input type="date" value={form.license_expiry_date} onChange={e => update('license_expiry_date', e.target.value)} required dir="ltr" aria-invalid={!!fieldErrors.license_expiry_date} data-field-error={fieldErrors.license_expiry_date ? 'true' : undefined} className={fieldErrors.license_expiry_date ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.license_expiry_date && <p className="text-xs font-medium text-destructive">{fieldErrors.license_expiry_date}</p>}
+  </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رفع صورة الرخصة (PDF أو صورة)' : 'Upload License File (PDF or Image)'}</Label>
+  <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setLicenseFile(e.target.files?.[0] || null)} />
+  </div>
+  <div className="space-y-2" data-field-error={fieldErrors.city ? 'true' : undefined}>
+  <Label>{isRTL ? 'المدينة' : 'City'}</Label>
+  <Select value={form.city} onValueChange={v => update('city', v)}>
+  <SelectTrigger className={fieldErrors.city ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
+  <SelectContent>
+  {SAUDI_CITIES.map(c => (
+  <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.city && <p className="text-xs font-medium text-destructive">{fieldErrors.city}</p>}
+  </div>
+  <div className="space-y-2" data-field-error={fieldErrors.office_type ? 'true' : undefined}>
+  <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
+  <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
+  <SelectTrigger className={fieldErrors.office_type ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
+  <SelectContent>
+  {OFFICE_TYPES.map(t => (
+  <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.office_type && <p className="text-xs font-medium text-destructive">{fieldErrors.office_type}</p>}
+  </div>
  <div className="space-y-2">
  <Label>{isRTL ? 'مناطق التغطية' : 'Coverage Areas'}</Label>
  <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">

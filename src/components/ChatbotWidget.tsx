@@ -27,15 +27,12 @@ export function ChatbotWidget() {
   }, [messages]);
 
   useEffect(() => {
-    if (location.pathname !== '/') return;
-
-    setIsOpen(true);
     setMessages((prev) => {
       const hasUserMessages = prev.some((m) => m.role === 'user');
       if (hasUserMessages) return prev;
       return [{ role: 'assistant', content: welcomeMessage, timestamp: new Date() }];
     });
-  }, [location.pathname, welcomeMessage]);
+  }, [welcomeMessage]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;

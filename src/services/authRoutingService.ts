@@ -74,7 +74,9 @@ export async function resolvePostAuthDestination(userId: string) {
     if (!supervisor?.id) {
       // Best-effort: insert may fail if RLS blocks it, but we still allow access
       // because the profile already proves the role.
-      await supabase.from('supervisors').upsert({ id: userId }).select().maybeSingle().catch(() => null);
+      try {
+        await supabase.from('supervisors').upsert({ id: userId });
+      } catch { /* RLS may block; profile.role is the source of truth */ }
     }
 
     // Only redirect to onboarding if the profile is incomplete (no name).

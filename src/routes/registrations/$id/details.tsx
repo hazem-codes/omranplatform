@@ -85,7 +85,8 @@ function RegistrationDetailsPage() {
   if (authLoading || role !== 'supervisor') return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/40 pt-20"><div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/40 pt-20">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black">تفاصيل تسجيل المكتب</h1>
         <Button variant="outline" onClick={() => navigate({ to: '/supervisor/dashboard' as '/' })}>
@@ -185,6 +186,7 @@ function RegistrationDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div></div>
+      </div>
+    </div>
   );
 }

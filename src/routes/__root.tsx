@@ -89,13 +89,19 @@ function RootComponent() {
       }>
         <ThemeProvider>
           <AuthProvider>
-            <div className="min-h-screen flex flex-col">
+            <div className="relative min-h-screen flex flex-col">
               <Navbar />
               <main className="flex-1">
                 <Outlet />
+                <div className="sticky bottom-6 z-40 mt-6 w-full px-4 pointer-events-none">
+                  <div className="mx-auto w-full max-w-7xl">
+                    <div className="pointer-events-auto w-fit ml-[-46px] mr-auto">
+                      <ChatbotWidget />
+                    </div>
+                  </div>
+                </div>
               </main>
               <Footer />
-              <ChatbotWidget />
               <Toaster />
               <RouteLoadingOverlay />
             </div>

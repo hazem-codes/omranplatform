@@ -351,7 +351,7 @@ Requirements:
  {/* Detail Modal */}
  <Dialog open={!!detailItem} onOpenChange={(open) => { if (!open) setDetailItem(null); }}>
  <DialogContent
- className="max-w-lg max-h-[90vh] overflow-y-auto"
+className="max-w-4xl max-h-[90dvh] overflow-y-auto"
  onOpenAutoFocus={(e) => e.preventDefault()}
  >
  <DialogHeader><DialogTitle>{isRTL ? 'تفاصيل الخدمة' : 'Service Details'}</DialogTitle></DialogHeader>
@@ -449,7 +449,7 @@ Requirements:
  {/* Booking Modal */}
  <Dialog open={!!bookingItem} onOpenChange={(open) => { if (!open) setBookingItem(null); }}>
  <DialogContent
- className="max-w-md max-h-[90vh] overflow-y-auto"
+className="max-w-2xl max-h-[90dvh] overflow-y-auto"
  onOpenAutoFocus={(e) => e.preventDefault()}
  >
  <DialogHeader><DialogTitle>{isRTL ? 'طلب الخدمة' : 'Request Service'}</DialogTitle></DialogHeader>

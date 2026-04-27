@@ -281,7 +281,7 @@ function CatalogPage() {
 
       {/* Preview Dialog */}
       <Dialog open={!!previewItem} onOpenChange={(open) => { if (!open) setPreviewItem(null); }}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
+        <DialogContent className="max-w-4xl max-h-[90dvh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
           {previewItem && (
             <>
               <DialogHeader>

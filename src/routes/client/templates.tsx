@@ -356,7 +356,7 @@ function TemplatesPage() {
  {/* Preview Modal */}
  <Dialog open={!!previewItem} onOpenChange={(open) => { if (!open) setPreviewItem(null); }}>
  <DialogContent
- className="max-w-lg max-h-[90vh] overflow-y-auto"
+ className="max-w-4xl max-h-[90dvh] overflow-y-auto"
  onOpenAutoFocus={(e) => e.preventDefault()}
  >
  <DialogHeader><DialogTitle>{isRTL ? 'معاينة القالب' : 'Template Preview'}</DialogTitle></DialogHeader>

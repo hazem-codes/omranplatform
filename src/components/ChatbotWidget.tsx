@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from '@tanstack/react-router';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { aiService } from '@/services/aiService';
@@ -8,6 +9,7 @@ import ReactMarkdown from 'react-markdown';
 
 export function ChatbotWidget() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', content: t('chatbot.greeting'), timestamp: new Date() },
@@ -16,9 +18,24 @@ export function ChatbotWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const welcomeMessage = i18n.language === 'ar'
+    ? 'أهلًا بك في منصة عمران 👋 أنا عمران الذكي، دليلك في المنصة لخدمتك وتسهيل احتياجك.'
+    : t('chatbot.greeting');
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (location.pathname !== '/') return;
+
+    setIsOpen(true);
+    setMessages((prev) => {
+      const hasUserMessages = prev.some((m) => m.role === 'user');
+      if (hasUserMessages) return prev;
+      return [{ role: 'assistant', content: welcomeMessage, timestamp: new Date() }];
+    });
+  }, [location.pathname, welcomeMessage]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -42,18 +59,19 @@ export function ChatbotWidget() {
   };
 
   return (
-    <>
-      {/* Floating button */}
+    <div className="relative z-40">
+      {/* Floating action button trigger */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 end-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-gold shadow-gold transition-transform hover:scale-110"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-gold shadow-gold transition-transform hover:scale-110"
+        aria-label={t('chatbot.title')}
       >
         {isOpen ? <X className="h-6 w-6 text-gold-foreground" /> : <MessageCircle className="h-6 w-6 text-gold-foreground" />}
       </button>
 
-      {/* Chat panel */}
+      {/* Chat panel opens above the button without affecting page layout */}
       {isOpen && (
-        <div className="fixed bottom-24 end-6 z-50 flex h-[500px] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border bg-card shadow-2xl">
+        <div className="absolute bottom-full left-0 mb-3 z-50 flex h-[500px] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border bg-card shadow-2xl">
           {/* Header */}
           <div className="bg-gradient-navy px-4 py-3 text-primary-foreground">
             <div className="flex items-center gap-2">
@@ -120,6 +138,6 @@ export function ChatbotWidget() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

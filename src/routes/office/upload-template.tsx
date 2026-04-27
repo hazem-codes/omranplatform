@@ -318,7 +318,7 @@ function UploadTemplatePage() {
 
       {/* Preview Dialog */}
       <Dialog open={!!previewTpl} onOpenChange={(open) => { if (!open) setPreviewTpl(null); }}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
+        <DialogContent className="max-w-4xl max-h-[90dvh] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
           {previewTpl && (() => {
             const previewImg = previewTpl.preview_image_url
               || (typeof previewTpl.description === 'string' ? (previewTpl.description.match(/Preview Image URL:\s*(\S+)/i)?.[1] || previewTpl.description.match(/رابط صورة المعاينة:\s*(\S+)/)?.[1]) : null)

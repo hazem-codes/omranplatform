@@ -26,8 +26,17 @@ export function InlineChatbot({ headline, subheadline }: InlineChatbotProps) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const didMountRef = useRef(false);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    const el = messagesEndRef.current;
+    const container = el?.parentElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages]);
 
   const suggestions = isRTL

@@ -45,10 +45,11 @@ function RegisterPage() {
  { ar: '5-10 سنوات', en: '5-10 years' },
  { ar: 'أكثر من 10 سنوات', en: 'More than 10 years' },
  ];
- const [licenseFile, setLicenseFile] = useState<File | null>(null);
- const [loading, setLoading] = useState(false);
- const [onboardingChecked, setOnboardingChecked] = useState(false);
- const [allowSupervisorRole, setAllowSupervisorRole] = useState(false);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [allowSupervisorRole, setAllowSupervisorRole] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
  useEffect(() => {
  if (isLoading) return;
@@ -104,32 +105,51 @@ function RegisterPage() {
  }));
  };
 
- const handleSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- if (isOnboarding && !isAuthenticated) {
- toast.error(isRTL ? 'يجب تسجيل الدخول أولاً' : 'Please sign in first');
- return;
- }
- if (isOnboarding && !form.role) {
- toast.error(isRTL ? 'اختر نوع الحساب أولاً' : 'Please select an account role first');
- return;
- }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs: Record<string, string> = {};
 
- if (form.password !== form.confirmPassword) {
- toast.error(isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
- return;
- }
- if (form.role === 'engineering_office') {
- if (!form.license_number.match(/^SE-\d{5}$/)) {
- toast.error(isRTL ? 'صيغة رقم الترخيص غير صحيحة (SE-XXXXX)' : 'Invalid license format (SE-XXXXX)');
- return;
- }
- if (!form.phone.match(/^05\d{8}$/)) {
- toast.error(isRTL ? 'صيغة رقم الهاتف غير صحيحة (05xxxxxxxx)' : 'Invalid phone format (05xxxxxxxx)');
- return;
- }
- }
- setLoading(true);
+    if (isOnboarding && !isAuthenticated) {
+      toast.error(isRTL ? 'يجب تسجيل الدخول أولاً' : 'Please sign in first');
+      return;
+    }
+    if (isOnboarding && !form.role) {
+      errs.role = isRTL ? 'اختر نوع الحساب أولاً' : 'Please select an account role first';
+    }
+
+    if (form.password !== form.confirmPassword) {
+      errs.confirmPassword = isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match';
+    }
+    if (form.role === 'engineering_office') {
+      const lic = form.license_number.trim().toUpperCase();
+      if (!lic.match(/^SE-\d{5}$/)) {
+        errs.license_number = isRTL
+          ? 'يجب أن يبدأ رقم الترخيص بـ SE- ثم 5 أرقام (مثال: SE-12345)'
+          : 'License must start with SE- followed by 5 digits (e.g., SE-12345)';
+      }
+      if (!form.phone.match(/^05\d{8}$/)) {
+        errs.phone = isRTL
+          ? 'يجب أن يبدأ رقم الهاتف بـ 05 ويتكون من 10 أرقام (مثال: 0512345678)'
+          : 'Phone must start with 05 and contain 10 digits (e.g., 0512345678)';
+      }
+      if (!form.city) errs.city = isRTL ? 'اختر المدينة' : 'Select your city';
+      if (!form.office_type) errs.office_type = isRTL ? 'اختر نوع المكتب' : 'Select office type';
+      if (!form.license_expiry_date) errs.license_expiry_date = isRTL ? 'اختر تاريخ الانتهاء' : 'Select expiry date';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      const first = Object.values(errs)[0];
+      toast.error(first, { duration: 6000 });
+      // scroll to first error
+      requestAnimationFrame(() => {
+        const el = document.querySelector('[data-field-error="true"]');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      return;
+    }
+    setFieldErrors({});
+    setLoading(true);
  try {
  if (isOnboarding) {
  const user = session?.user ?? (await supabase.auth.getUser()).data.user;

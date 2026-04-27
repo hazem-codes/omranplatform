@@ -222,10 +222,11 @@
   animation: none;
 }
 
-/* Page entrance: fade + subtle rise on first load only */
+/* Page entrance: fade only on body — never animate transform on <body>,
+   it would create a containing block and break position:fixed for modals. */
 @keyframes omranPageEnter {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 body {
   opacity: 0;

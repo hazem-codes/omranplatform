@@ -60,26 +60,9 @@ export async function resolvePostAuthDestination(userId: string) {
   }
 
   if (role === 'supervisor') {
-    // Supervisor RLS policies on project_requests, clients, offices, etc. require
-    // a row in public.supervisors. If the supervisor account was created via signup
-    // (not via completeOnboarding), the row may be missing — every supervisor query
-    // would then silently return zero rows and break the request review workflow.
-    // Self-heal via a server function (RLS blocks the client from inserting itself).
-    const { data: supervisor } = await supabase
-      .from('supervisors')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (!supervisor?.id) {
-      try {
-        const { ensureSupervisorRow } = await import('./ensureSupervisorRow.server');
-        await ensureSupervisorRow();
-      } catch {
-        // Best effort — the profile.role is the source of truth for routing.
-      }
-    }
-
+    // Supervisor accounts are admin-created. Trust profiles.role — a supervisors
+    // table row is required by RLS but may be missing for accounts created via
+    // signup. The DB migration `fix_supervisor_access.sql` backfills these rows.
     if (!profile.name?.trim()) {
       return '/register?onboarding=1';
     }

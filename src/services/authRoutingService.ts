@@ -61,16 +61,9 @@ export async function resolvePostAuthDestination(userId: string) {
 
   if (role === 'supervisor') {
     // Supervisor accounts are admin-created. Trust profiles.role — a supervisors
-    // table row is optional and may not exist if created outside the onboarding flow.
-    const { data: supervisor } = await supabase
-      .from('supervisors')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle();
-
-    // Only redirect to onboarding if the profile is incomplete (no name).
-    // Don't gate on the supervisors table row since RLS may block self-insert.
-    if (!supervisor?.id && !profile.name?.trim()) {
+    // table row is required by RLS but may be missing for accounts created via
+    // signup. The DB migration `fix_supervisor_access.sql` backfills these rows.
+    if (!profile.name?.trim()) {
       return '/register?onboarding=1';
     }
   }

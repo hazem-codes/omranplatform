@@ -185,6 +185,6 @@ function RegistrationDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </div></div>
   );
 }

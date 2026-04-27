@@ -174,6 +174,6 @@ function TemplateDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </div></div>
   );
 }

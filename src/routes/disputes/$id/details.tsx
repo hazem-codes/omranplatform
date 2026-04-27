@@ -171,6 +171,6 @@ function DisputeDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </div></div>
   );
 }

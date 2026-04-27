@@ -166,6 +166,6 @@ function RequestDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </div></div>
   );
 }

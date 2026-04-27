@@ -180,9 +180,9 @@ const DEMO_ACCOUNTS: Array<{
  email: string;
  password: string;
 }> = [
- { key: 'client', ar: 'عميل تجريبي', en: 'Demo Client', icon: User, email: 'client@mimaar.demo', password: 'Demo@1234' },
- { key: 'office', ar: 'مكتب هندسي تجريبي', en: 'Demo Engineering Office', icon: Building2, email: 'office@mimaar.demo', password: 'Demo@1234' },
- { key: 'supervisor', ar: 'مشرف تجريبي', en: 'Demo Supervisor', icon: ShieldCheck, email: 'supervisor@mimaar.demo', password: 'Demo@1234' },
+  { key: 'client', ar: 'عميل تجريبي', en: 'Demo Client', icon: User, email: 'client@omran.demo', password: 'Demo@1234' },
+  { key: 'office', ar: 'مكتب هندسي تجريبي', en: 'Demo Engineering Office', icon: Building2, email: 'office@omran.demo', password: 'Demo@1234' },
+  { key: 'supervisor', ar: 'مشرف تجريبي', en: 'Demo Supervisor', icon: ShieldCheck, email: 'supervisor@omran.demo', password: 'Demo@1234' },
 ];
 
 function DemoAccountsPanel({ isRTL, onFill }: { isRTL: boolean; onFill: (creds: DemoCreds) => void }) {

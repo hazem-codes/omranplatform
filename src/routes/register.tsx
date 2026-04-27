@@ -45,10 +45,11 @@ function RegisterPage() {
  { ar: '5-10 سنوات', en: '5-10 years' },
  { ar: 'أكثر من 10 سنوات', en: 'More than 10 years' },
  ];
- const [licenseFile, setLicenseFile] = useState<File | null>(null);
- const [loading, setLoading] = useState(false);
- const [onboardingChecked, setOnboardingChecked] = useState(false);
- const [allowSupervisorRole, setAllowSupervisorRole] = useState(false);
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [allowSupervisorRole, setAllowSupervisorRole] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
  useEffect(() => {
  if (isLoading) return;
@@ -104,32 +105,51 @@ function RegisterPage() {
  }));
  };
 
- const handleSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- if (isOnboarding && !isAuthenticated) {
- toast.error(isRTL ? 'يجب تسجيل الدخول أولاً' : 'Please sign in first');
- return;
- }
- if (isOnboarding && !form.role) {
- toast.error(isRTL ? 'اختر نوع الحساب أولاً' : 'Please select an account role first');
- return;
- }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs: Record<string, string> = {};
 
- if (form.password !== form.confirmPassword) {
- toast.error(isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
- return;
- }
- if (form.role === 'engineering_office') {
- if (!form.license_number.match(/^SE-\d{5}$/)) {
- toast.error(isRTL ? 'صيغة رقم الترخيص غير صحيحة (SE-XXXXX)' : 'Invalid license format (SE-XXXXX)');
- return;
- }
- if (!form.phone.match(/^05\d{8}$/)) {
- toast.error(isRTL ? 'صيغة رقم الهاتف غير صحيحة (05xxxxxxxx)' : 'Invalid phone format (05xxxxxxxx)');
- return;
- }
- }
- setLoading(true);
+    if (isOnboarding && !isAuthenticated) {
+      toast.error(isRTL ? 'يجب تسجيل الدخول أولاً' : 'Please sign in first');
+      return;
+    }
+    if (isOnboarding && !form.role) {
+      errs.role = isRTL ? 'اختر نوع الحساب أولاً' : 'Please select an account role first';
+    }
+
+    if (form.password !== form.confirmPassword) {
+      errs.confirmPassword = isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match';
+    }
+    if (form.role === 'engineering_office') {
+      const lic = form.license_number.trim().toUpperCase();
+      if (!lic.match(/^SE-\d{5}$/)) {
+        errs.license_number = isRTL
+          ? 'يجب أن يبدأ رقم الترخيص بـ SE- ثم 5 أرقام (مثال: SE-12345)'
+          : 'License must start with SE- followed by 5 digits (e.g., SE-12345)';
+      }
+      if (!form.phone.match(/^05\d{8}$/)) {
+        errs.phone = isRTL
+          ? 'يجب أن يبدأ رقم الهاتف بـ 05 ويتكون من 10 أرقام (مثال: 0512345678)'
+          : 'Phone must start with 05 and contain 10 digits (e.g., 0512345678)';
+      }
+      if (!form.city) errs.city = isRTL ? 'اختر المدينة' : 'Select your city';
+      if (!form.office_type) errs.office_type = isRTL ? 'اختر نوع المكتب' : 'Select office type';
+      if (!form.license_expiry_date) errs.license_expiry_date = isRTL ? 'اختر تاريخ الانتهاء' : 'Select expiry date';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      const first = Object.values(errs)[0];
+      toast.error(first, { duration: 6000 });
+      // scroll to first error
+      requestAnimationFrame(() => {
+        const el = document.querySelector('[data-field-error="true"]');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      return;
+    }
+    setFieldErrors({});
+    setLoading(true);
  try {
  if (isOnboarding) {
  const user = session?.user ?? (await supabase.auth.getUser()).data.user;
@@ -251,58 +271,65 @@ function RegisterPage() {
  <Label>{t('auth.email')}</Label>
  <Input type="email" value={form.email} onChange={e => update('email', e.target.value)} required dir="ltr" />
  </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'رقم الهاتف' : 'Phone Number'}{form.role === 'engineering_office' ? ' (05xxxxxxxx)' : ''}</Label>
- <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} dir="ltr" placeholder="05xxxxxxxx" required={form.role === 'engineering_office'} />
- </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رقم الهاتف' : 'Phone Number'}{form.role === 'engineering_office' ? ' (05xxxxxxxx)' : ''}</Label>
+  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} dir="ltr" placeholder="05xxxxxxxx" required={form.role === 'engineering_office'} maxLength={10} aria-invalid={!!fieldErrors.phone} data-field-error={fieldErrors.phone ? 'true' : undefined} className={fieldErrors.phone ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.phone && <p className="text-xs font-medium text-destructive">{fieldErrors.phone}</p>}
+  </div>
  <div className="grid grid-cols-2 gap-4">
  <div className="space-y-2">
  <Label>{t('auth.password')}</Label>
  <Input type="password" value={form.password} onChange={e => update('password', e.target.value)} required dir="ltr" />
  </div>
- <div className="space-y-2">
- <Label>{t('auth.confirm_password')}</Label>
- <Input type="password" value={form.confirmPassword} onChange={e => update('confirmPassword', e.target.value)} required dir="ltr" />
- </div>
+  <div className="space-y-2">
+  <Label>{t('auth.confirm_password')}</Label>
+  <Input type="password" value={form.confirmPassword} onChange={e => update('confirmPassword', e.target.value)} required dir="ltr" aria-invalid={!!fieldErrors.confirmPassword} data-field-error={fieldErrors.confirmPassword ? 'true' : undefined} className={fieldErrors.confirmPassword ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.confirmPassword && <p className="text-xs font-medium text-destructive">{fieldErrors.confirmPassword}</p>}
+  </div>
  </div>
 
  {/* Office-specific fields */}
  {form.role === 'engineering_office' && (
  <div className="space-y-4 rounded-xl border border-gold/20 bg-gold/5 p-4">
- <div className="space-y-2">
- <Label>{isRTL ? 'رقم الترخيص (هيئة المهندسين السعوديين)' : 'License Number (Saudi Engineers Authority)'}</Label>
- <Input value={form.license_number} onChange={e => update('license_number', e.target.value)} required dir="ltr" placeholder="SE-XXXXX" />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'تاريخ انتهاء الترخيص' : 'License Expiry Date'}</Label>
- <Input type="date" value={form.license_expiry_date} onChange={e => update('license_expiry_date', e.target.value)} required dir="ltr" />
- </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رقم الترخيص (هيئة المهندسين السعوديين)' : 'License Number (Saudi Engineers Authority)'}</Label>
+  <Input value={form.license_number} onChange={e => update('license_number', e.target.value.toUpperCase())} required dir="ltr" placeholder="SE-12345" maxLength={8} aria-invalid={!!fieldErrors.license_number} data-field-error={fieldErrors.license_number ? 'true' : undefined} className={fieldErrors.license_number ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  <p className="text-[11px] text-muted-foreground">{isRTL ? 'الصيغة: SE- متبوعة بـ 5 أرقام' : 'Format: SE- followed by 5 digits'}</p>
+  {fieldErrors.license_number && <p className="text-xs font-medium text-destructive">{fieldErrors.license_number}</p>}
+  </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'تاريخ انتهاء الترخيص' : 'License Expiry Date'}</Label>
+  <Input type="date" value={form.license_expiry_date} onChange={e => update('license_expiry_date', e.target.value)} required dir="ltr" aria-invalid={!!fieldErrors.license_expiry_date} data-field-error={fieldErrors.license_expiry_date ? 'true' : undefined} className={fieldErrors.license_expiry_date ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.license_expiry_date && <p className="text-xs font-medium text-destructive">{fieldErrors.license_expiry_date}</p>}
+  </div>
  <div className="space-y-2">
  <Label>{isRTL ? 'رفع صورة الرخصة (PDF أو صورة)' : 'Upload License File (PDF or Image)'}</Label>
  <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setLicenseFile(e.target.files?.[0] || null)} />
  </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'المدينة' : 'City'}</Label>
- <Select value={form.city} onValueChange={v => update('city', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
- <SelectContent>
- {SAUDI_CITIES.map(c => (
- <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
- <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
- <SelectContent>
- {OFFICE_TYPES.map(t => (
- <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
+  <div className="space-y-2" data-field-error={fieldErrors.city ? 'true' : undefined}>
+  <Label>{isRTL ? 'المدينة' : 'City'}</Label>
+  <Select value={form.city} onValueChange={v => update('city', v)}>
+  <SelectTrigger className={fieldErrors.city ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
+  <SelectContent>
+  {SAUDI_CITIES.map(c => (
+  <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.city && <p className="text-xs font-medium text-destructive">{fieldErrors.city}</p>}
+  </div>
+  <div className="space-y-2" data-field-error={fieldErrors.office_type ? 'true' : undefined}>
+  <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
+  <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
+  <SelectTrigger className={fieldErrors.office_type ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
+  <SelectContent>
+  {OFFICE_TYPES.map(t => (
+  <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.office_type && <p className="text-xs font-medium text-destructive">{fieldErrors.office_type}</p>}
+  </div>
  <div className="space-y-2">
  <Label>{isRTL ? 'مناطق التغطية' : 'Coverage Areas'}</Label>
  <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
@@ -369,47 +396,53 @@ function RegisterPage() {
  <Input value={form.name} onChange={e => update('name', e.target.value)} required />
  </div>
 
- <div className="space-y-2">
- <Label>{isRTL ? 'رقم الهاتف' : 'Phone Number'}{form.role === 'engineering_office' ? ' (05xxxxxxxx)' : ''}</Label>
- <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} dir="ltr" placeholder="05xxxxxxxx" required />
- </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رقم الهاتف' : 'Phone Number'}{form.role === 'engineering_office' ? ' (05xxxxxxxx)' : ''}</Label>
+  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} dir="ltr" placeholder="05xxxxxxxx" required maxLength={10} aria-invalid={!!fieldErrors.phone} data-field-error={fieldErrors.phone ? 'true' : undefined} className={fieldErrors.phone ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.phone && <p className="text-xs font-medium text-destructive">{fieldErrors.phone}</p>}
+  </div>
 
- {form.role === 'engineering_office' && (
- <div className="space-y-4 rounded-xl border border-gold/20 bg-gold/5 p-4">
- <div className="space-y-2">
- <Label>{isRTL ? 'رقم الترخيص (هيئة المهندسين السعوديين)' : 'License Number (Saudi Engineers Authority)'}</Label>
- <Input value={form.license_number} onChange={e => update('license_number', e.target.value)} required dir="ltr" placeholder="SE-XXXXX" />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'تاريخ انتهاء الترخيص' : 'License Expiry Date'}</Label>
- <Input type="date" value={form.license_expiry_date} onChange={e => update('license_expiry_date', e.target.value)} required dir="ltr" />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'رفع صورة الرخصة (PDF أو صورة)' : 'Upload License File (PDF or Image)'}</Label>
- <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setLicenseFile(e.target.files?.[0] || null)} />
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'المدينة' : 'City'}</Label>
- <Select value={form.city} onValueChange={v => update('city', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
- <SelectContent>
- {SAUDI_CITIES.map(c => (
- <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
- <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
- <SelectContent>
- {OFFICE_TYPES.map(t => (
- <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
+  {form.role === 'engineering_office' && (
+  <div className="space-y-4 rounded-xl border border-gold/20 bg-gold/5 p-4">
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رقم الترخيص (هيئة المهندسين السعوديين)' : 'License Number (Saudi Engineers Authority)'}</Label>
+  <Input value={form.license_number} onChange={e => update('license_number', e.target.value.toUpperCase())} required dir="ltr" placeholder="SE-12345" maxLength={8} aria-invalid={!!fieldErrors.license_number} data-field-error={fieldErrors.license_number ? 'true' : undefined} className={fieldErrors.license_number ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  <p className="text-[11px] text-muted-foreground">{isRTL ? 'الصيغة: SE- متبوعة بـ 5 أرقام' : 'Format: SE- followed by 5 digits'}</p>
+  {fieldErrors.license_number && <p className="text-xs font-medium text-destructive">{fieldErrors.license_number}</p>}
+  </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'تاريخ انتهاء الترخيص' : 'License Expiry Date'}</Label>
+  <Input type="date" value={form.license_expiry_date} onChange={e => update('license_expiry_date', e.target.value)} required dir="ltr" aria-invalid={!!fieldErrors.license_expiry_date} data-field-error={fieldErrors.license_expiry_date ? 'true' : undefined} className={fieldErrors.license_expiry_date ? 'border-destructive ring-2 ring-destructive/30' : ''} />
+  {fieldErrors.license_expiry_date && <p className="text-xs font-medium text-destructive">{fieldErrors.license_expiry_date}</p>}
+  </div>
+  <div className="space-y-2">
+  <Label>{isRTL ? 'رفع صورة الرخصة (PDF أو صورة)' : 'Upload License File (PDF or Image)'}</Label>
+  <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setLicenseFile(e.target.files?.[0] || null)} />
+  </div>
+  <div className="space-y-2" data-field-error={fieldErrors.city ? 'true' : undefined}>
+  <Label>{isRTL ? 'المدينة' : 'City'}</Label>
+  <Select value={form.city} onValueChange={v => update('city', v)}>
+  <SelectTrigger className={fieldErrors.city ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
+  <SelectContent>
+  {SAUDI_CITIES.map(c => (
+  <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.city && <p className="text-xs font-medium text-destructive">{fieldErrors.city}</p>}
+  </div>
+  <div className="space-y-2" data-field-error={fieldErrors.office_type ? 'true' : undefined}>
+  <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
+  <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
+  <SelectTrigger className={fieldErrors.office_type ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
+  <SelectContent>
+  {OFFICE_TYPES.map(t => (
+  <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.office_type && <p className="text-xs font-medium text-destructive">{fieldErrors.office_type}</p>}
+  </div>
  <div className="space-y-2">
  <Label>{isRTL ? 'مناطق التغطية' : 'Coverage Areas'}</Label>
  <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">

@@ -8,6 +8,7 @@ import { SEED_OFFICES } from '@/data/seedData';
 import { supabase } from '@/integrations/supabase/client';
 import { resolvePostAuthDestination } from '@/services/authRoutingService';
 import riyadhHero from '@/assets/riyadh-hero.jpg';
+import { InlineChatbot } from '@/components/InlineChatbot';
 
 export const Route = createFileRoute('/')({
  component: LandingPage,

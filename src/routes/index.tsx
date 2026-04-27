@@ -8,6 +8,7 @@ import { SEED_OFFICES } from '@/data/seedData';
 import { supabase } from '@/integrations/supabase/client';
 import { resolvePostAuthDestination } from '@/services/authRoutingService';
 import riyadhHero from '@/assets/riyadh-hero.jpg';
+import { InlineChatbot } from '@/components/InlineChatbot';
 
 export const Route = createFileRoute('/')({
  component: LandingPage,
@@ -120,18 +121,27 @@ function LandingPage() {
  animation: revealSection 0.6s ease-out forwards;
  }
  `}</style>
- {/* SECTION 1 — Hero */}
- <section className="relative overflow-hidden py-24 lg:py-36">
+  {/* SECTION 1 — Hero */}
+ <section className="relative overflow-hidden py-24 lg:py-32">
  <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${riyadhHero})` }} />
- <div className="absolute inset-0 bg-black/60" />
+ <div className="absolute inset-0 bg-black/65" />
  <div className="relative mx-auto max-w-7xl px-4 text-center">
- <h1 className="omran-hero-item text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl" style={{ animationDelay: '0s' }}>
- {isRTL ? 'عَمّر بيتك مع عمران' : 'BUILD YOUR HOME WITH OMRAN'}
+ <h1 className="omran-hero-item text-3xl font-black tracking-tight text-white md:text-5xl lg:text-6xl" style={{ animationDelay: '0s' }}>
+ {isRTL ? 'بوابتك للمشاريع الهندسية مع مساعد عمران الذكي' : 'Your Gateway to Engineering Projects with Omran AI Assistant'}
  </h1>
- <p className="omran-hero-item mx-auto mt-4 max-w-2xl text-2xl font-light text-white/85 md:text-4xl lg:text-[2.625rem]" style={{ animationDelay: '0.15s' }}>
- {isRTL ? 'عمران لخدمات المكاتب الهندسية' : 'Omran for Engineering Services'}
+ <p className="omran-hero-item mx-auto mt-4 max-w-2xl text-lg font-light text-white/85 md:text-2xl" style={{ animationDelay: '0.15s' }}>
+ {isRTL ? 'اسأل، استكشف، وابدأ مشروعك في دقائق' : 'Ask, explore, and start your project in minutes'}
  </p>
- <div className="omran-hero-item" style={{ animationDelay: '0.3s', transform: `translateY(-${scrollOffset}px)`, transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)', willChange: 'transform' }}>
+
+ {/* Featured Chatbot CTA */}
+ <div className="omran-hero-item mt-10" style={{ animationDelay: '0.3s' }}>
+ <InlineChatbot
+ headline={isRTL ? 'مساعد عمران الذكي' : 'Omran AI Assistant'}
+ subheadline={isRTL ? 'تحدث الآن للحصول على إرشاد فوري لمشروعك' : 'Chat now for instant guidance on your project'}
+ />
+ </div>
+
+ <div className="omran-hero-item" style={{ animationDelay: '0.45s', transform: `translateY(-${scrollOffset}px)`, transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)', willChange: 'transform' }}>
  <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
  <Link to="/register" search={{ type: 'client' }}>
  <Button size="lg" className="bg-gradient-gold text-gold-foreground shadow-gold text-base px-8 py-6 hover:opacity-90">

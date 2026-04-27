@@ -306,28 +306,30 @@ function RegisterPage() {
  <Label>{isRTL ? 'رفع صورة الرخصة (PDF أو صورة)' : 'Upload License File (PDF or Image)'}</Label>
  <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setLicenseFile(e.target.files?.[0] || null)} />
  </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'المدينة' : 'City'}</Label>
- <Select value={form.city} onValueChange={v => update('city', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
- <SelectContent>
- {SAUDI_CITIES.map(c => (
- <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
- <div className="space-y-2">
- <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
- <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
- <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
- <SelectContent>
- {OFFICE_TYPES.map(t => (
- <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
- ))}
- </SelectContent>
- </Select>
- </div>
+  <div className="space-y-2" data-field-error={fieldErrors.city ? 'true' : undefined}>
+  <Label>{isRTL ? 'المدينة' : 'City'}</Label>
+  <Select value={form.city} onValueChange={v => update('city', v)}>
+  <SelectTrigger className={fieldErrors.city ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر المدينة' : 'Select City'} /></SelectTrigger>
+  <SelectContent>
+  {SAUDI_CITIES.map(c => (
+  <SelectItem key={c.ar} value={c.ar}>{isRTL ? c.ar : c.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.city && <p className="text-xs font-medium text-destructive">{fieldErrors.city}</p>}
+  </div>
+  <div className="space-y-2" data-field-error={fieldErrors.office_type ? 'true' : undefined}>
+  <Label>{isRTL ? 'نوع المكتب' : 'Office Type'}</Label>
+  <Select value={form.office_type} onValueChange={v => update('office_type', v)}>
+  <SelectTrigger className={fieldErrors.office_type ? 'border-destructive ring-2 ring-destructive/30' : ''}><SelectValue placeholder={isRTL ? 'اختر نوع المكتب' : 'Select Office Type'} /></SelectTrigger>
+  <SelectContent>
+  {OFFICE_TYPES.map(t => (
+  <SelectItem key={t.ar} value={t.ar}>{isRTL ? t.ar : t.en}</SelectItem>
+  ))}
+  </SelectContent>
+  </Select>
+  {fieldErrors.office_type && <p className="text-xs font-medium text-destructive">{fieldErrors.office_type}</p>}
+  </div>
  <div className="space-y-2">
  <Label>{isRTL ? 'مناطق التغطية' : 'Coverage Areas'}</Label>
  <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">

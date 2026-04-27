@@ -104,7 +104,7 @@ function TemplateDetailsPage() {
   const sub = cat?.subcategories.find((s) => s.key === tpl?.sub_category);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-background dark:to-muted/30 pt-20"><div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black">تفاصيل القالب</h1>
         <Button variant="outline" onClick={() => navigate({ to: '/supervisor/dashboard' as '/' })}>

@@ -15,6 +15,7 @@ export class User {
   protected name: string;
   protected email: string;
   protected password: string;
+ protected phone: string;
   protected role: 'client' | 'engineering_office' | 'supervisor';
 
   constructor(data: { userID: string; name: string; email: string; password?: string; role: 'client' | 'engineering_office' | 'supervisor' }) {
